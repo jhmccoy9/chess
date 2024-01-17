@@ -56,8 +56,92 @@ public class ChessBoard {
      */
     public void resetBoard()
     {
-        board = new ChessPiece[8][8];
-        //throw new RuntimeException("Not implemented");
+        // should look like this:
+        /*
+        |r|n|b|q|k|b|n|r|
+        |p|p|p|p|p|p|p|p|
+        | | | | | | | | |
+        | | | | | | | | |
+        | | | | | | | | |
+        | | | | | | | | |
+        |P|P|P|P|P|P|P|P|
+        |R|N|B|Q|K|B|N|R|
+        capital letters are white and lowercase letters are black
+         */
+
+        // black pieces first
+        // black rooks
+        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        ChessPosition position = new ChessPosition(8, 1);
+        this.addPiece(position, piece);
+        position = new ChessPosition(8,8);
+        this.addPiece(position, piece);
+        // black knights
+        piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        position = new ChessPosition(8, 2);
+        this.addPiece(position, piece);
+        position = new ChessPosition(8,7);
+        this.addPiece(position, piece);
+        // black bishops
+        piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        position = new ChessPosition(8, 3);
+        this.addPiece(position, piece);
+        position = new ChessPosition(8, 6);
+        this.addPiece(position, piece);
+        // black queen
+        piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        position = new ChessPosition(8, 4);
+        this.addPiece(position, piece);
+        // black king
+        piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        position = new ChessPosition(8,5);
+        this.addPiece(position, piece);
+        //black pawns
+        for (int col = 1; col <= 8; col++)
+        {
+            piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            position = new ChessPosition(7, col);
+            this.addPiece(position, piece);
+        }
+
+        // white pieces. copy and paste of the black pieces
+        // white rooks
+        piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        position = new ChessPosition(1, 1);
+        this.addPiece(position, piece);
+        position = new ChessPosition(1,8);
+        this.addPiece(position, piece);
+        // white knights
+        piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        position = new ChessPosition(1, 2);
+        this.addPiece(position, piece);
+        position = new ChessPosition(1,7);
+        this.addPiece(position, piece);
+        // white bishops
+        piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        position = new ChessPosition(1, 3);
+        this.addPiece(position, piece);
+        position = new ChessPosition(1, 6);
+        this.addPiece(position, piece);
+        // white queen
+        piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        position = new ChessPosition(1, 4);
+        this.addPiece(position, piece);
+        // white king
+        piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        position = new ChessPosition(1,5);
+        this.addPiece(position, piece);
+        //white pawns
+        for (int col = 1; col <= 8; col++)
+        {
+            piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            position = new ChessPosition(2, col);
+            this.addPiece(position, piece);
+        }
+        String temp = this.toString();
+
+
+        return;
     }
 
     @Override
@@ -65,11 +149,41 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.equals(board, that.board);
+        boolean to_return = true;
+        for (int i = 0; i < 8; i++)
+        {
+            if(!(Arrays.equals(board[i], that.board[i])))
+            {
+                to_return = false;
+            }
+        }
+        return to_return;
     }
 
     @Override
     public int hashCode() {
         return Arrays.hashCode(board);
+    }
+
+    @Override
+    public String toString() {
+        // note: this returns the board upside down
+        StringBuilder builder = new StringBuilder();
+        ChessPosition position;
+        for (int i = 1; i <= 8; i++)
+        {
+            for (int j = 1; j <= 8; j++)
+            {
+                position = new ChessPosition(i,j);
+                if (this.getPiece(position) != null)
+                {
+                    builder.append(this.getPiece(position).toString());
+                }
+                else
+                    builder.append(" ");
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 }
