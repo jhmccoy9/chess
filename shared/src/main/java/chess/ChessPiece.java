@@ -1,8 +1,7 @@
 package chess;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 
 /**
  * Represents a single chess piece
@@ -20,6 +19,31 @@ public class ChessPiece {
         this.color = pieceColor;
     }
 
+    @Override
+    public String toString() {
+        return "Type: " + this.type + " Color: " + this.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.type, this.color);
+    }
+
+    @Override
+    public boolean equals(Object piece) {
+        if (this == piece)
+            return true;
+        else if (piece == null || getClass() != piece.getClass())
+            return false;
+        else if (this.color == ((ChessPiece) piece).color && this.type == ((ChessPiece) piece).type)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     /**
      * The various different chess piece options
@@ -58,7 +82,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
-        Set<ChessMove> possible_moves = new HashSet<ChessMove>() {};
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
 
         // go through each of the piece types
         switch (this.type)
@@ -72,10 +96,6 @@ public class ChessPiece {
                 // Bishop can move diagonally until it hits another player
                 // or a boundary
                 // four combinations: slope of 1 and -1 going forward and backward in time
-                // y_2 - y_1 = m(x_2 - x_1)
-                // start_y - end_y = start_x - (go through all possible x's)
-
-                //TODO: must implement different slopes and directions
 
                 // going up and to the right
                 int y = myPosition.getRow() + 1;
@@ -103,6 +123,34 @@ public class ChessPiece {
                         possible_moves.add(new_move);
                     }
                     x--;y++;
+                }
+
+                // going down and to the left
+                y = myPosition.getRow() - 1;
+                x = myPosition.getColumn() - 1;
+                while (x >= 1 && y >= 1)
+                {
+                    ChessPosition temp_position = new ChessPosition(y, x);
+                    if(board.getPiece(temp_position) == null)
+                    {
+                        ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                        possible_moves.add(new_move);
+                    }
+                    x--;y--;
+                }
+
+                // going down and to the right
+                y = myPosition.getRow() - 1;
+                x = myPosition.getColumn() + 1;
+                while (x <= 8 && y >= 1)
+                {
+                    ChessPosition temp_position = new ChessPosition(y, x);
+                    if(board.getPiece(temp_position) == null)
+                    {
+                        ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                        possible_moves.add(new_move);
+                    }
+                    x++;y--;
                 }
 
                 break;

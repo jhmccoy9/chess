@@ -48,4 +48,36 @@ public class ChessMove {
         return this.promotionPiece;
         //throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    /*
+    //@Override
+    public boolean equals(ChessMove move)
+    {
+        // base cases
+        if (this == move)
+            return true;
+        else if (move == null || getClass() != move.getClass())
+            return false;
+        else if (this.getEndPosition() == move.getEndPosition() &&
+                 this.getStartPosition() == move.getStartPosition() &&
+                 this.getPromotionPiece() == move.getPromotionPiece())
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+    */
+
 }

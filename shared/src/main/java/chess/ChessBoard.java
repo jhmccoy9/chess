@@ -52,7 +52,9 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
-    public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+    public void resetBoard()
+    {
+        board = new ChessPiece[8][8];
+        //throw new RuntimeException("Not implemented");
     }
 }
