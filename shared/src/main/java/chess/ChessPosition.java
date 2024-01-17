@@ -63,7 +63,7 @@ public class ChessPosition {
             return true;
         else if (position == null || getClass() != position.getClass())
             return false;
-        else if (this.col == ((ChessPosition) position).getColumn() && this.row == ((ChessPosition) position).getColumn()) {
+        else if (this.col == ((ChessPosition) position).getColumn() && this.row == ((ChessPosition) position).getRow()) {
             return true;
         }
         return false;

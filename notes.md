@@ -10,4 +10,3 @@ chesspiece
 chessmove
 chessposition
 
-I need to override some functions to get this to work

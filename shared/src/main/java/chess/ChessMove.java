@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -50,34 +52,49 @@ public class ChessMove {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-
-    @Override
     public String toString() {
-        return super.toString();
+        if (this.getPromotionPiece() == null)
+            return "Start: " + this.getStartPosition().toString() + " End: " + this.getEndPosition().toString() + " Promotion Piece: " + "null\n";
+        else
+            return "Start: " + this.getStartPosition().toString() + " End: " + this.getEndPosition().toString() + " Promotion Piece: " + this.getPromotionPiece().toString() + "\n";
+
     }
 
-    /*
-    //@Override
-    public boolean equals(ChessMove move)
+
+
+    /*@Override
+    public boolean equals(Object move)
     {
-        // base cases
         if (this == move)
             return true;
         else if (move == null || getClass() != move.getClass())
             return false;
-        else if (this.getEndPosition() == move.getEndPosition() &&
-                 this.getStartPosition() == move.getStartPosition() &&
-                 this.getPromotionPiece() == move.getPromotionPiece())
+        else if (this.getEndPosition().equals(((ChessMove) move).getEndPosition()) &&
+                 this.getStartPosition().equals(((ChessMove) move).getStartPosition()) &&
+                 this.getPromotionPiece().equals(((ChessMove) move).getPromotionPiece()))
         {
             return true;
         }
         else
             return false;
     }
-    */
 
+     */
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        if (promotionPiece != null)
+            return Objects.hash(startPosition.hashCode(), endPosition.hashCode(), promotionPiece.hashCode());
+        else
+            return Objects.hash(startPosition.hashCode(), endPosition.hashCode());
+    }
 }
