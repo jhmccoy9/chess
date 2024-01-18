@@ -128,74 +128,124 @@ public class ChessPiece {
                 // a player already there
                 break;
             case BISHOP:
-                // Bishop can move diagonally until it hits another player
-                // or a boundary
-                // four combinations: slope of 1 and -1 going forward and backward in time
-
-                // going up and to the right
-                int y = myPosition.getRow() + 1;
-                int x = myPosition.getColumn() + 1;
-                while (x <= 8 && y <= 8)
-                {
-                    ChessPosition temp_position = new ChessPosition(y, x);
-                    if(board.getPiece(temp_position) == null)
-                    {
-                        ChessMove new_move = new ChessMove(myPosition, temp_position, null);
-                        possible_moves.add(new_move);
-                    }
-                    x++;y++;
-                }
-
-                // going up and to the left
-                y = myPosition.getRow() + 1;
-                x = myPosition.getColumn() - 1;
-                while (x >= 1 && y <= 8)
-                {
-                    ChessPosition temp_position = new ChessPosition(y, x);
-                    if(board.getPiece(temp_position) == null)
-                    {
-                        ChessMove new_move = new ChessMove(myPosition, temp_position, null);
-                        possible_moves.add(new_move);
-                    }
-                    x--;y++;
-                }
-
-                // going down and to the left
-                y = myPosition.getRow() - 1;
-                x = myPosition.getColumn() - 1;
-                while (x >= 1 && y >= 1)
-                {
-                    ChessPosition temp_position = new ChessPosition(y, x);
-                    if(board.getPiece(temp_position) == null)
-                    {
-                        ChessMove new_move = new ChessMove(myPosition, temp_position, null);
-                        possible_moves.add(new_move);
-                    }
-                    x--;y--;
-                }
-
-                // going down and to the right
-                y = myPosition.getRow() - 1;
-                x = myPosition.getColumn() + 1;
-                while (x <= 8 && y >= 1)
-                {
-                    ChessPosition temp_position = new ChessPosition(y, x);
-                    if(board.getPiece(temp_position) == null)
-                    {
-                        ChessMove new_move = new ChessMove(myPosition, temp_position, null);
-                        possible_moves.add(new_move);
-                    }
-                    x++;y--;
-                }
-
+                Collection<ChessMove> temp = bishopMoves(board, myPosition);
+                possible_moves.addAll(temp);
                 break;
         }
 
-//        if (possible_moves.isEmpty())
-//        {
-//            throw new RuntimeException("no valid moves rn");
-//        }
         return possible_moves;
-        //throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition)
+    {
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
+
+        // Bishop can move diagonally until it hits another player
+        // or a boundary
+        // four combinations: slope of 1 and -1 going forward and backward in time
+
+        // going up and to the right
+        int y = myPosition.getRow() + 1;
+        int x = myPosition.getColumn() + 1;
+        boolean keep_going = true;
+        while (keep_going && x <= 8 && y <= 8) {
+            ChessPosition temp_position = new ChessPosition(y, x);
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+            x++;y++;
+        }
+
+        // going up and to the left
+        y = myPosition.getRow() + 1;
+        x = myPosition.getColumn() - 1;
+        keep_going = true;
+        while (keep_going && x >= 1 && y <= 8)
+        {
+            ChessPosition temp_position = new ChessPosition(y, x);
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+
+            x--;y++;
+        }
+
+        // going down and to the left
+        y = myPosition.getRow() - 1;
+        x = myPosition.getColumn() - 1;
+        keep_going = true;
+        while (keep_going && x >= 1 && y >= 1)
+        {
+            ChessPosition temp_position = new ChessPosition(y, x);
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+            x--;y--;
+        }
+
+        // going down and to the right
+        y = myPosition.getRow() - 1;
+        x = myPosition.getColumn() + 1;
+        keep_going = true;
+        while (keep_going && x <= 8 && y >= 1)
+        {
+            ChessPosition temp_position = new ChessPosition(y, x);
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+
+            x++;y--;
+        }
+
+        return possible_moves;
+
     }
 }
