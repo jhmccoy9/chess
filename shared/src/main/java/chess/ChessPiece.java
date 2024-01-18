@@ -128,6 +128,10 @@ public class ChessPiece {
                 // King can move to any adjacent square that doesn't have
                 // a player already there
                 break;
+            case KNIGHT:
+                break;
+            case PAWN:
+                break;
             case BISHOP:
                 temp = bishopMoves(board, myPosition);
                 possible_moves.addAll(temp);
@@ -140,6 +144,9 @@ public class ChessPiece {
                 temp = rookMoves(board, myPosition);
                 temp.addAll(bishopMoves(board, myPosition));
                 possible_moves.addAll(temp);
+                break;
+            default:
+                // TODO: throw an error ou qqch
                 break;
 
         }
