@@ -136,6 +136,11 @@ public class ChessPiece {
                 temp = rookMoves(board, myPosition);
                 possible_moves.addAll(temp);
                 break;
+            case QUEEN:
+                temp = rookMoves(board, myPosition);
+                temp.addAll(bishopMoves(board, myPosition));
+                possible_moves.addAll(temp);
+                break;
 
         }
 
