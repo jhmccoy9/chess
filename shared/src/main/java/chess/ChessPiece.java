@@ -118,6 +118,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
         Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
+        Collection<ChessMove> temp;
 
         // go through each of the piece types
         switch (this.type)
@@ -128,12 +129,117 @@ public class ChessPiece {
                 // a player already there
                 break;
             case BISHOP:
-                Collection<ChessMove> temp = bishopMoves(board, myPosition);
+                temp = bishopMoves(board, myPosition);
                 possible_moves.addAll(temp);
                 break;
+            case ROOK:
+                temp = rookMoves(board, myPosition);
+                possible_moves.addAll(temp);
+                break;
+
         }
 
         return possible_moves;
+    }
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition)
+    {
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
+        // go in each of the possible four directions until an obstacle is hit or you hit the edge
+        //move up
+        boolean keep_going = true;
+        for (int row = myPosition.getRow() + 1; (row <= 8) && keep_going; row++)
+        {
+            ChessPosition temp_position = new ChessPosition(row, myPosition.getColumn());
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+
+        }
+
+        // go down
+        keep_going = true;
+        for (int row = myPosition.getRow() - 1; (row >= 1) && keep_going; row--)
+        {
+            ChessPosition temp_position = new ChessPosition(row, myPosition.getColumn());
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+
+        }
+
+        // go left
+        keep_going = true;
+        for (int col = myPosition.getColumn() - 1; (col >= 1) && keep_going; col--)
+        {
+            ChessPosition temp_position = new ChessPosition(myPosition.getRow(), col);
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+
+        }
+
+        // go right
+        keep_going = true;
+        for (int col = myPosition.getColumn() + 1; (col <= 8) && keep_going; col++)
+        {
+            ChessPosition temp_position = new ChessPosition(myPosition.getRow(), col);
+            if (board.getPiece(temp_position) == null)
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+            }
+            else if(board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+            {
+                ChessMove new_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(new_move);
+                keep_going = false;
+            }
+            else
+            {
+                keep_going = false;
+            }
+
+        }
+
+
+        return possible_moves;
+
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition)
