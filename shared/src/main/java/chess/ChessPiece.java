@@ -1,5 +1,6 @@
 package chess;
 
+import java.sql.Array;
 import java.util.*;
 
 
@@ -127,6 +128,8 @@ public class ChessPiece {
             case KING:
                 // King can move to any adjacent square that doesn't have
                 // a player already there
+                temp = kingMoves(board, myPosition);
+                possible_moves.addAll(temp);
                 break;
             case KNIGHT:
                 break;
@@ -153,6 +156,60 @@ public class ChessPiece {
 
         return possible_moves;
     }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition)
+    {
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
+        ChessMove temp_move;
+        ChessPosition temp_position;
+        List<Integer> directions = new ArrayList<>();
+        directions.add(-1);
+        directions.add(0);
+        directions.add(1);
+        int x = myPosition.getColumn();
+        int y = myPosition.getRow();
+
+        // go through every possible direction combo for the king
+        for(int direction_x : directions)
+        {
+            for(int direction_y : directions)
+            {
+                // king can't stay still
+                if (!(direction_x == 0 && direction_y == 0))
+                {
+                    int newx = direction_x + x;
+                    int newy = direction_y + y;
+                    // boundary check
+                    if (newx >= 1 && newx <= 8 && newy >= 1 && newy <= 8)
+                    {
+                        // make the new move
+                        temp_position = new ChessPosition(newy, newx);
+
+                        // make sure that the space is either null or a different color
+                        if (board.getPiece(temp_position) == null)
+                        {
+                            temp_move = new ChessMove(myPosition, temp_position, null);
+                            possible_moves.add(temp_move);
+                        }
+                        else if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+                        {
+                            temp_move = new ChessMove(myPosition, temp_position, null);
+                            possible_moves.add(temp_move);
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+
+
+
+        return possible_moves;
+    }
+
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition)
     {
         Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
