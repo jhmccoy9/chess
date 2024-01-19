@@ -132,6 +132,8 @@ public class ChessPiece {
                 possible_moves.addAll(temp);
                 break;
             case KNIGHT:
+                temp = knightMoves(board, myPosition);
+                possible_moves.addAll(temp);
                 break;
             case PAWN:
                 break;
@@ -153,6 +155,54 @@ public class ChessPiece {
                 break;
 
         }
+
+        return possible_moves;
+    }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition)
+    {
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
+        ChessMove temp_move;
+        ChessPosition temp_position;
+
+        // a knight has at most 8 possible moves
+        int[][] directions = {
+                {2,1},
+                {2,-1},
+                {1,2},
+                {1,-2},
+                {-2,-1},
+                {-1,-2},
+                {-1,2},
+                {-2,1}
+        };
+        int x = myPosition.getColumn();
+        int y = myPosition.getRow();
+        // go through every move combo and determine its suitability
+        for (int i = 0; i < directions.length; i++)
+        {
+            temp_position = new ChessPosition(y+directions[i][0], x+directions[i][1]);
+            if (x+directions[i][1] >= 1 && x+directions[i][1] <= 8 && y+directions[i][0] >= 1 && y+directions[i][0] <= 8)
+            {
+                // make the new move
+
+                // make sure that the space is either null or a different color
+                if (board.getPiece(temp_position) == null)
+                {
+                    temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
+                else if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+                {
+                    temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
+
+            }
+        }
+
+
+
 
         return possible_moves;
     }
