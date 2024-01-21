@@ -195,6 +195,39 @@ public class ChessPiece {
             }
         }
 
+        // look for possible captures
+        // need to check both sides
+        temp_position = new ChessPosition(y + direction, x + 1);
+        // check for valid spot
+        if (y+direction >= 1 && y+direction <= 8 && x + 1 <= 8 && x + 1 >= 1)
+        {
+            // check to make sure it's an enemy
+            if (board.getPiece(temp_position) != null)
+            {
+                if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+                {
+                    temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
+            }
+        }
+        temp_position = new ChessPosition(y + direction, x - 1);
+        // check for valid spot
+        if (y+direction >= 1 && y+direction <= 8 && x - 1 <= 8 && x - 1 >= 1)
+        {
+            // check to make sure it's an enemy
+            if (board.getPiece(temp_position) != null)
+            {
+                if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+                {
+                    temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
+            }
+        }
+
+
+
 
 
         return possible_moves;
