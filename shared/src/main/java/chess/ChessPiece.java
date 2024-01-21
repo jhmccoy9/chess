@@ -126,8 +126,6 @@ public class ChessPiece {
         {
             // TODO: implement all the piece types
             case KING:
-                // King can move to any adjacent square that doesn't have
-                // a player already there
                 temp = kingMoves(board, myPosition);
                 possible_moves.addAll(temp);
                 break;
@@ -136,6 +134,8 @@ public class ChessPiece {
                 possible_moves.addAll(temp);
                 break;
             case PAWN:
+                temp = pawnMoves(board, myPosition);
+                possible_moves.addAll(temp);
                 break;
             case BISHOP:
                 temp = bishopMoves(board, myPosition);
@@ -158,6 +158,45 @@ public class ChessPiece {
 
         return possible_moves;
     }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition)
+    {
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
+        ChessMove temp_move;
+        ChessPosition temp_position;
+        int x = myPosition.getColumn();
+        int y = myPosition.getRow();
+
+        // white starts from bottom and moves up, black starts from top and moves down
+        int direction = board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
+        // see if spot immediately in front of it is free
+        temp_position = new ChessPosition(y + direction, x);
+        // make sure it's empty
+        if (board.getPiece(temp_position) == null)
+        {
+            temp_move = new ChessMove(myPosition, temp_position, null);
+            possible_moves.add(temp_move);
+        }
+
+
+        // also, see if it can move 2 spots in the first position
+        if (y == 2 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ||
+            y == 7 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)
+        {
+            temp_position = new ChessPosition(y + direction * 2, x);
+            if (board.getPiece(temp_position) == null)
+            {
+                temp_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(temp_move);
+            }
+        }
+
+
+
+        return possible_moves;
+
+    }
+
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition)
     {
