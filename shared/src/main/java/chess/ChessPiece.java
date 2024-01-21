@@ -171,13 +171,14 @@ public class ChessPiece {
         int direction = board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ? 1 : -1;
         // see if spot immediately in front of it is free
         temp_position = new ChessPosition(y + direction, x);
-        // make sure it's empty
-        if (board.getPiece(temp_position) == null)
+        // make sure it's empty and a valid spot
+        if (y + direction >= 1 && y + direction <= 8)
         {
-            temp_move = new ChessMove(myPosition, temp_position, null);
-            possible_moves.add(temp_move);
+            if (board.getPiece(temp_position) == null) {
+                temp_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(temp_move);
+            }
         }
-
 
         // also, see if it can move 2 spots in the first position
         if (y == 2 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ||
