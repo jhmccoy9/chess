@@ -184,11 +184,14 @@ public class ChessPiece {
         if (y == 2 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ||
             y == 7 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)
         {
-            temp_position = new ChessPosition(y + direction * 2, x);
+            // check the old temp position too. it can't move two up if there's still one in front of it
             if (board.getPiece(temp_position) == null)
             {
-                temp_move = new ChessMove(myPosition, temp_position, null);
-                possible_moves.add(temp_move);
+                temp_position = new ChessPosition(y + direction * 2, x);
+                if (board.getPiece(temp_position) == null) {
+                    temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
             }
         }
 
