@@ -175,8 +175,24 @@ public class ChessPiece {
         if (y + direction >= 1 && y + direction <= 8)
         {
             if (board.getPiece(temp_position) == null) {
-                temp_move = new ChessMove(myPosition, temp_position, null);
-                possible_moves.add(temp_move);
+                // if it's the end of the board, add in the promotion pieces, otherwise null
+                if ((y + direction == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                    (y + direction == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK))
+                {
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.QUEEN);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.KNIGHT);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.ROOK);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.BISHOP);
+                    possible_moves.add(temp_move);
+                }
+                else
+                {
+                    temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
             }
         }
 
@@ -206,6 +222,7 @@ public class ChessPiece {
             {
                 if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
                 {
+
                     temp_move = new ChessMove(myPosition, temp_position, null);
                     possible_moves.add(temp_move);
                 }
@@ -213,15 +230,30 @@ public class ChessPiece {
         }
         temp_position = new ChessPosition(y + direction, x - 1);
         // check for valid spot
-        if (y+direction >= 1 && y+direction <= 8 && x - 1 <= 8 && x - 1 >= 1)
-        {
+        if (y+direction >= 1 && y+direction <= 8 && x - 1 <= 8 && x - 1 >= 1) {
             // check to make sure it's an enemy
-            if (board.getPiece(temp_position) != null)
-            {
-                if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-                {
-                    temp_move = new ChessMove(myPosition, temp_position, null);
-                    possible_moves.add(temp_move);
+            if (board.getPiece(temp_position) != null) {
+                if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                    // make sure it's empty and a valid spot
+                    if (y + direction >= 1 && y + direction <= 8) {
+                        // if it's the end of the board, add in the promotion pieces, otherwise null
+                        if ((y + direction == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                                (y + direction == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
+                            temp_move = new ChessMove(myPosition, temp_position, PieceType.QUEEN);
+                            possible_moves.add(temp_move);
+                            temp_move = new ChessMove(myPosition, temp_position, PieceType.KNIGHT);
+                            possible_moves.add(temp_move);
+                            temp_move = new ChessMove(myPosition, temp_position, PieceType.ROOK);
+                            possible_moves.add(temp_move);
+                            temp_move = new ChessMove(myPosition, temp_position, PieceType.BISHOP);
+                            possible_moves.add(temp_move);
+                        } else {
+                            temp_move = new ChessMove(myPosition, temp_position, null);
+                            possible_moves.add(temp_move);
+                        }
+//                    temp_move = new ChessMove(myPosition, temp_position, null);
+//                    possible_moves.add(temp_move);
+                    }
                 }
             }
         }
