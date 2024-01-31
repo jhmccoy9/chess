@@ -15,12 +15,12 @@ public class ChessGame {
     private Collection<ChessMove> moves;
     private ChessGame.TeamColor whoseTurn;
 
-    public ChessGame() {
+    public ChessGame()
+    {
         this.board = new ChessBoard();
         this.board.resetBoard();
         this.moves = new Stack<>();
         this.whoseTurn = TeamColor.WHITE;
-
     }
 
     /**
@@ -53,7 +53,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         // for now, don't do anything about verifying that this wouldn't put you in check
         //TODO: check for check
-        return board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+        return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
     }
 
     /**
@@ -66,9 +66,10 @@ public class ChessGame {
         // get the start position and end position
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
+        TeamColor current_color = board.getPiece(start).getTeamColor();
 
         // get the piece
-        ChessPiece piece = board.getPiece(start);
+        ChessPiece piece = this.board.getPiece(start);
 
         // if it's getting promoted, make a new piece
         ChessPiece new_piece;
@@ -84,6 +85,17 @@ public class ChessGame {
 
         // make it null where it used to be
         board.addPiece(start, dead_piece);
+
+        // make sure this doesn't result in a check. if it does, undo the move and throw
+        // the exception
+        if (isInCheck(current_color))
+        {
+            // TODO: make it undo the move
+
+            throw new InvalidMoveException("Puts king in check");
+        }
+
+
         return;
     }
 
@@ -93,8 +105,67 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInCheck(TeamColor teamColor)
+    {
+        ChessPosition king_position = null;
+        // get the position of teamColor's king
+        for (int i = 1; i <= 8; i++)
+        {
+            for (int j = 1; j <= 8; j++)
+            {
+                ChessPosition temp_position = new ChessPosition(i, j);
+                ChessPiece temp_piece = board.getPiece(temp_position);
+
+                // if it's a king of the correct color
+                if (temp_piece.getPieceType() == ChessPiece.PieceType.KING &&
+                    temp_piece.getTeamColor() == teamColor)
+                {
+                    king_position = new ChessPosition(i, j);
+                    // end the loop
+                    i = j = 9;
+                }
+            }
+        }
+        if (king_position == null)
+        {
+            throw new RuntimeException("No king found");
+        }
+
+
+
+        TeamColor enemyColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        // go through all the pieces of the enemy color
+        for (int i = 1; i <= 8; i++)
+        {
+            for (int j = 1; j <= 8; j++)
+            {
+                ChessPosition temp_position = new ChessPosition(i, j);
+                ChessPiece temp_piece = board.getPiece(temp_position);
+                // make sure it's a valid piece
+                if (temp_piece != null)
+                {
+                    // make sure it's the right color
+                    if (temp_piece.getTeamColor() == enemyColor)
+                    {
+                        // calculate every possible move for the enemy piece
+                        Collection<ChessMove> possible_moves = temp_piece.pieceMoves(board, temp_position);
+
+                        // if any of those moves' end position is the position of teamColor's king, it is in check
+                        for (ChessMove move : possible_moves)
+                        {
+                            if (move.getEndPosition() == king_position)
+                            {
+                                return true;
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+        return false;
     }
 
     /**
@@ -123,16 +194,12 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setBoard(ChessBoard board) {
-        this.board = board;
-    }
+    public void setBoard(ChessBoard board) {this.board = board;}
 
     /**
      * Gets the current chessboard
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() {
-        return this.board;
-    }
+    public ChessBoard getBoard() {return this.board;}
 }
