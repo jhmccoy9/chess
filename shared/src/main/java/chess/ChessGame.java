@@ -63,6 +63,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+
         // get the start position and end position
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
@@ -70,6 +71,22 @@ public class ChessGame {
 
         // get the piece
         ChessPiece piece = this.board.getPiece(start);
+
+        // get the piece that's about to be overwritten, in case you have to undo the move
+        ChessPiece overwritten_piece = this.board.getPiece(end);
+
+        // make sure that this move is in the set of valid moves for that piece
+        Collection<ChessMove> possible_moves = piece.pieceMoves(this.board, start);
+        if (!(possible_moves.contains(move)))
+        {
+            throw new InvalidMoveException("Not a possible move for this piece");
+        }
+
+        // make sure that the move being made is for the right color
+        if (this.whoseTurn != current_color)
+        {
+            throw new InvalidMoveException("Not this color's turn!");
+        }
 
         // if it's getting promoted, make a new piece
         ChessPiece new_piece;
@@ -85,12 +102,21 @@ public class ChessGame {
 
         // make it null where it used to be
         board.addPiece(start, dead_piece);
+        this.whoseTurn = (this.whoseTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
 
         // make sure this doesn't result in a check. if it does, undo the move and throw
         // the exception
         if (isInCheck(current_color))
         {
-            // TODO: make it undo the move
+            // undo the move
+            // change it back to the original team's turn
+            this.whoseTurn = (this.whoseTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
+            // put the piece that moved back where it came from
+            this.board.addPiece(start, piece);
+
+            // replace the incorrect destination square with whatever was there before
+            this.board.addPiece(end, overwritten_piece);
 
             throw new InvalidMoveException("Puts king in check");
         }
@@ -115,20 +141,20 @@ public class ChessGame {
             {
                 ChessPosition temp_position = new ChessPosition(i, j);
                 ChessPiece temp_piece = board.getPiece(temp_position);
-
-                // if it's a king of the correct color
-                if (temp_piece.getPieceType() == ChessPiece.PieceType.KING &&
-                    temp_piece.getTeamColor() == teamColor)
-                {
-                    king_position = new ChessPosition(i, j);
-                    // end the loop
-                    i = j = 9;
+                if (temp_piece != null) {
+                    // if it's a king of the correct color
+                    if (temp_piece.getPieceType() == ChessPiece.PieceType.KING &&
+                            temp_piece.getTeamColor() == teamColor) {
+                        king_position = new ChessPosition(i, j);
+                        // end the loop
+                        i = j = 9;
+                    }
                 }
             }
         }
         if (king_position == null)
         {
-            throw new RuntimeException("No king found");
+            return false; // can't be in check if you don't have a king :)
         }
 
 
@@ -153,7 +179,7 @@ public class ChessGame {
                         // if any of those moves' end position is the position of teamColor's king, it is in check
                         for (ChessMove move : possible_moves)
                         {
-                            if (move.getEndPosition() == king_position)
+                            if (move.getEndPosition().equals(king_position))
                             {
                                 return true;
                             }
