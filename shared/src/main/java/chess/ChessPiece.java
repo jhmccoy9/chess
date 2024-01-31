@@ -14,11 +14,17 @@ public class ChessPiece {
 
     private PieceType type;
     private ChessGame.TeamColor color;
+    private boolean moved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
         this.color = pieceColor;
+        this.moved = false;
     }
+
+    // getters and setters for moved
+    public boolean hasMoved() {return this.moved;}
+    public void setMoved() {this.moved = true;}
 
     @Override
     public String toString() {
@@ -124,7 +130,6 @@ public class ChessPiece {
         // go through each of the piece types
         switch (this.type)
         {
-            // TODO: implement all the piece types
             case KING:
                 temp = kingMoves(board, myPosition);
                 possible_moves.addAll(temp);
@@ -151,7 +156,6 @@ public class ChessPiece {
                 possible_moves.addAll(temp);
                 break;
             default:
-                // TODO: throw an error ou qqch
                 break;
 
         }
@@ -222,7 +226,6 @@ public class ChessPiece {
             {
                 if (board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor())
                 {
-
                     temp_move = new ChessMove(myPosition, temp_position, null);
                     possible_moves.add(temp_move);
                 }
@@ -251,19 +254,11 @@ public class ChessPiece {
                             temp_move = new ChessMove(myPosition, temp_position, null);
                             possible_moves.add(temp_move);
                         }
-//                    temp_move = new ChessMove(myPosition, temp_position, null);
-//                    possible_moves.add(temp_move);
                     }
                 }
             }
         }
-
-
-
-
-
         return possible_moves;
-
     }
 
 
