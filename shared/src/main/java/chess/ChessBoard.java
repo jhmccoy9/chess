@@ -19,6 +19,26 @@ public class ChessBoard {
         board = new ChessPiece[8][8];
     }
 
+    // copy constructor
+    public ChessBoard(ChessBoard old)
+    {
+        board = new ChessPiece[8][8];
+        for (int i = 1; i <= 8; i++)
+        {
+            for (int j = 1; j <= 8; j++)
+            {
+                ChessPosition temp_position = new ChessPosition(i, j);
+                if (old.getPiece(temp_position) != null)
+                {
+                    ChessPiece temp_piece = new ChessPiece(old.getPiece(temp_position));
+                    this.addPiece(temp_position, temp_piece);
+                }
+
+            }
+
+        }
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *

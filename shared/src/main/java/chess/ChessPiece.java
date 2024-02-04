@@ -22,6 +22,13 @@ public class ChessPiece {
         this.moved = false;
     }
 
+    public ChessPiece(ChessPiece old)
+    {
+        this.type = old.getPieceType();
+        this.color = old.getTeamColor();
+        this.moved = old.hasMoved();
+    }
+
     // getters and setters for moved
     public boolean hasMoved() {return this.moved;}
     public void setMoved() {this.moved = true;}

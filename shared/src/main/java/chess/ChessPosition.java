@@ -24,6 +24,13 @@ public class ChessPosition {
         this.col = col;
     }
 
+    // copy constructor
+    public ChessPosition(ChessPosition old)
+    {
+        this.row = old.getRow();
+        this.col = old.getColumn();
+    }
+
 
     /**
      * @return which row this position is in
