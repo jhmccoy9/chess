@@ -53,6 +53,8 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
+        TeamColor old_color = this.whoseTurn;
+
         // step 1: if there is no piece there, return null
         if (this.getBoard().getPiece(startPosition) == null)
             return null;
@@ -77,7 +79,30 @@ public class ChessGame {
             }
             catch (InvalidMoveException e1)
             {
-                bad_move = true;
+                // if it's not that color's turn, change the color and try again
+                if (e1.toString().equals("chess.InvalidMoveException: Not this color's turn!"))
+                {
+                    try
+                    {
+                        this.whoseTurn = (this.whoseTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+                        this.makeMove(move);
+                    }
+                    catch (InvalidMoveException e2)
+                    {
+                        // if it's still a bad move, mark it
+                        bad_move  = true;
+                    }
+                    finally
+                    {
+                        // either way, make sure you don't mess up the color
+                        this.whoseTurn = old_color;
+                    }
+                }
+                else // if the error is because of something else, there is a legitimate error
+                {
+                    this.whoseTurn = old_color;
+                    bad_move = true;
+                }
             }
 
             // if it is valid, reset the board to its normal state, add the move
