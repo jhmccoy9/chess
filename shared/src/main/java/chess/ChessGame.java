@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Stack;
 import java.io.*;
 /**
@@ -50,10 +51,49 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        // for now, don't do anything about verifying that this wouldn't put you in check
-        //TODO: check for check
-        return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+    public Collection<ChessMove> validMoves(ChessPosition startPosition)
+    {
+        // step 1: if there is no piece there, return null
+        if (this.getBoard().getPiece(startPosition) == null)
+            return null;
+
+        // step 2: get a list of all possible moves the piece could make: regardless of it would put
+        // the king in check
+        Collection<ChessMove> possible_moves =
+                this.getBoard().getPiece(startPosition).pieceMoves(this.getBoard(), startPosition);
+
+        // step 3: filter out anything that would leave the king in check. Do this by making each move
+        // on a temporary board and then adding the move to a new collection if it's valid
+        // deep copy
+        ChessBoard old_board = new ChessBoard(this.getBoard());
+        Collection<ChessMove> valid_moves = new HashSet<>();
+        for (ChessMove move : possible_moves)
+        {
+            // make the move. if it's invalid, keep going
+            boolean bad_move = false;
+            try
+            {
+                this.makeMove(move);
+            }
+            catch (InvalidMoveException e1)
+            {
+                bad_move = true;
+            }
+
+            // if it is valid, reset the board to its normal state, add the move
+            // to the valid moves set, and keep going. you also need to invert the color
+            // of the team playing since it just made a successful move
+            if (!bad_move)
+            {
+                ChessMove good_move = new ChessMove(move);
+                valid_moves.add(good_move);
+                ChessBoard reset_board = new ChessBoard(old_board);
+                this.setBoard(reset_board);
+                this.whoseTurn = (this.whoseTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+            }
+        }
+
+        return valid_moves;
     }
 
     /**
@@ -95,6 +135,11 @@ public class ChessGame {
         else
             new_piece = piece;
 
+        // make a new temporary board based off of the current board
+        ChessBoard new_board = new ChessBoard(this.getBoard());
+        ChessBoard old_board = this.getBoard();
+        this.setBoard(new_board);
+
         // put the piece in its new spot
         board.addPiece(end, new_piece);
 
@@ -108,19 +153,12 @@ public class ChessGame {
         // the exception
         if (isInCheck(current_color))
         {
-            // undo the move
             // change it back to the original team's turn
             this.whoseTurn = (this.whoseTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
-
-            // put the piece that moved back where it came from
-            this.board.addPiece(start, piece);
-
-            // replace the incorrect destination square with whatever was there before
-            this.board.addPiece(end, overwritten_piece);
+            setBoard(old_board);
 
             throw new InvalidMoveException("Puts king in check");
         }
-
 
         return;
     }
@@ -154,9 +192,8 @@ public class ChessGame {
         }
         if (king_position == null)
         {
-            return false; // can't be in check if you don't have a king :)
+            return false; // can't be in check if you don't have a king ;)
         }
-
 
 
         TeamColor enemyColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;

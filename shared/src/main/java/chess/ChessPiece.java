@@ -170,6 +170,103 @@ public class ChessPiece {
         return possible_moves;
     }
 
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> possible_moves = new HashSet<ChessMove>() {
+        };
+        // black goes backwards and white goes forwards
+        int direction = (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
+        int starting_row = (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        // first, go through all the straight moves
+        int next_row = row + 2 * direction;
+        // if nothing is there or one spot ahead of it, it can go there
+        ChessPosition temp_position = new ChessPosition(next_row, col);
+        ChessPosition directly_ahead = new ChessPosition(row + direction, col);
+        if (board.getPiece(directly_ahead) == null) {
+            // if it's not at the end, it gets a promotion
+            if ((directly_ahead.getRow() == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                    (directly_ahead.getRow() == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
+                ChessMove temp_move = new ChessMove(myPosition, directly_ahead, PieceType.QUEEN);
+                possible_moves.add(temp_move);
+                temp_move = new ChessMove(myPosition, directly_ahead, PieceType.BISHOP);
+                possible_moves.add(temp_move);
+                temp_move = new ChessMove(myPosition, directly_ahead, PieceType.ROOK);
+                possible_moves.add(temp_move);
+                temp_move = new ChessMove(myPosition, directly_ahead, PieceType.KNIGHT);
+                possible_moves.add(temp_move);
+            }
+            // otherwise it gets nothing
+            else {
+                ChessMove temp_move = new ChessMove(myPosition, directly_ahead, null);
+                possible_moves.add(temp_move);
+            }
+
+            if (row == starting_row && board.getPiece(temp_position) == null) {
+                ChessMove temp_move = new ChessMove(myPosition, temp_position, null);
+                possible_moves.add(temp_move);
+            }
+        }
+
+        // next, look at the capture options
+        // to the left
+        int new_row = row + direction;
+        int new_col = col - 1;
+        // boundary check
+        if (new_col >= 1 && new_col <= 8 && new_row >= 1 && new_row <= 8) {
+            // make sure it's not null and an enemy
+            temp_position = new ChessPosition(new_row, new_col);
+            if (board.getPiece(temp_position) != null &&
+                    board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                // if you'd be at the end, promote, otherwise like normal
+                if ((temp_position.getRow() == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                        (temp_position.getRow() == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
+                    ChessMove temp_move = new ChessMove(myPosition, temp_position, PieceType.QUEEN);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.BISHOP);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.ROOK);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.KNIGHT);
+                    possible_moves.add(temp_move);
+                } else {
+                    ChessMove temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
+            }
+        }
+
+        // to the right
+        new_col = col + 1;
+        // boundary check
+        if (new_col >= 1 && new_col <= 8 && new_row >= 1 && new_row <= 8) {
+            // make sure it's not null and an enemy
+            temp_position = new ChessPosition(new_row, new_col);
+            if (board.getPiece(temp_position) != null &&
+                    board.getPiece(temp_position).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                // if you'd be at the end, promote, otherwise like normal
+                if ((temp_position.getRow() == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                        (temp_position.getRow() == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
+                    ChessMove temp_move = new ChessMove(myPosition, temp_position, PieceType.QUEEN);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.BISHOP);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.ROOK);
+                    possible_moves.add(temp_move);
+                    temp_move = new ChessMove(myPosition, temp_position, PieceType.KNIGHT);
+                    possible_moves.add(temp_move);
+                } else {
+                    ChessMove temp_move = new ChessMove(myPosition, temp_position, null);
+                    possible_moves.add(temp_move);
+                }
+            }
+        }
+        return possible_moves;
+    }
+
+
+    /*
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition)
     {
         Collection<ChessMove> possible_moves = new HashSet<ChessMove>(){};
@@ -266,7 +363,7 @@ public class ChessPiece {
             }
         }
         return possible_moves;
-    }
+    }*/
 
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition)
