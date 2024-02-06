@@ -262,8 +262,10 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInCheckmate(TeamColor teamColor)
+    {
+        // if it's in check and in stalemate, it's in checkmate
+        return (this.isInStalemate(teamColor) && this.isInCheck(teamColor));
     }
 
     /**
@@ -274,7 +276,42 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // find the king of that color
+        ChessPiece king = null;
+        ChessPosition king_position = null;
+        for (int i = 1; i <= 8; i++)
+        {
+            for (int j = 1; j <= 8; j++)
+            {
+                ChessPosition temp_position = new ChessPosition(i, j);
+                ChessPiece temp_piece = this.getBoard().getPiece(temp_position);
+                if (temp_piece != null &&
+                    temp_piece.getPieceType() == ChessPiece.PieceType.KING &&
+                    temp_piece.getTeamColor() == teamColor)
+                {
+                    king = temp_piece;
+                    king_position = temp_position;
+                    // break
+                    i = j = 9;
+                }
+
+            }
+
+        }
+
+        // can't be in stalemate if you don't have a king ;)
+        if (king == null)
+            return false;
+
+        // get all the valid moves
+        Collection<ChessMove> valid_moves = this.validMoves(king_position);
+
+        // if there are no valid moves, it's  in stalemate
+        if (valid_moves.isEmpty())
+        {
+            return true;
+        }
+        return false;
     }
 
     /**
