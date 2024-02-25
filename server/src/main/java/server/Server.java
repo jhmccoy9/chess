@@ -1,10 +1,25 @@
 package server;
 
+import dataAccess.DataAccess;
+import dataAccess.DataAccessException;
+import dataAccess.MemoryDataAccess;
 import spark.*;
 import com.google.gson.Gson;
+import service.ClearService;
+import model.*;
+
+import javax.xml.crypto.Data;
 
 
 public class Server {
+    private final ClearService clear_service;
+
+    public Server()
+    {
+
+        DataAccess dataAccess = new MemoryDataAccess();
+        clear_service = new ClearService(dataAccess);
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -33,22 +48,24 @@ public class Server {
         webSocketHandler.makeNoise(pet.name(), pet.sound());
         return new Gson().toJson(pet);
          */
-        return new Object();
+        return "{}";
     }
 
     private Object clearApp(Request req, Response res)
     {
-        /*
-        service.deleteAllPets();
-        res.status(204);
-        return "";
-         */
+        try {
+            clear_service.clear();
+        }
+        catch (DataAccessException e)
+        {
+            // if there's an error
+            res.status(500);
+            return new Gson().toJson(new model.ErrorData("Error: bad clear attempt"));
+        }
 
-
-        // right now, it's set up to return 200 no matter what...
+        // normal return case
         res.status(200);
         res.body("");
-
-        return "";
+        return "{}";
     }
 }

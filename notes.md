@@ -9,7 +9,6 @@ phase3 implementation todos:
 
 2/23
 1. server class
-2. make record (data model) classes (done)
 2. data access classes (daos)
 3. make a service class for each group of related endpoints
 4. request and result classes
