@@ -19,6 +19,16 @@ public class RegistrationService {
         String password = new_user.password();
         String email = new_user.email();
 
+        // make sure the username, password, and email are all valid
+        if (username == null || password == null || email == null)
+        {
+            throw new DataAccessException("Error: bad request");
+        }
+        else if (username.isEmpty() || password.isEmpty() || email.isEmpty())
+        {
+            throw new DataAccessException("Error: bad request");
+        }
+
         UserData user = dataAccess.getUser(username);
         if (user == null)
         {

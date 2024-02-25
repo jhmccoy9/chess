@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import service.*;
 import model.*;
 
+import javax.swing.*;
 import javax.xml.crypto.Data;
 
 
@@ -55,17 +56,24 @@ public class Server {
         }
         catch(DataAccessException e)
         {
+            ErrorData error = new ErrorData(e.toString());
+            String to_return = new Gson().toJson(error);
+
+
             // see what kind it is, and return the right message based off of that
             if (e.getMessage().equals("Error: already taken"))
             {
                 res.status(403);
-                ErrorData to_return = new ErrorData(e.toString());
-                return new Gson().toJson(to_return);
+                return to_return;
+            } else if (e.getMessage().equals("Error: bad request")) {
+                res.status(400);
+                return to_return;
             }
-
+            else {
+                res.status(500);
+                return to_return;
+            }
         }
-        res.status(500);
-        return "{}";
     }
 
     private Object clearApp(Request req, Response res)
