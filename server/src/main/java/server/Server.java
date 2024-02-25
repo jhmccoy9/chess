@@ -56,6 +56,12 @@ public class Server {
         catch(DataAccessException e)
         {
             // see what kind it is, and return the right message based off of that
+            if (e.getMessage().equals("Error: already taken"))
+            {
+                res.status(403);
+                ErrorData to_return = new ErrorData(e.toString());
+                return new Gson().toJson(to_return);
+            }
 
         }
         res.status(500);
