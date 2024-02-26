@@ -57,7 +57,7 @@ public class Server {
         // TODO: implement this!!!
         catch (DataAccessException e)
         {
-            ErrorData error = new ErrorData(e.toString());
+            ErrorData error = new ErrorData(e.getMessage());
             String to_return = new Gson().toJson(error);
             if (error.message().equals("Error: unauthorized"))
             {

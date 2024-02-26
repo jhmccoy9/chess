@@ -36,8 +36,7 @@ public class LoginService {
             throw new DataAccessException("Error: unauthorized");
         }
         // ideal: they're the same user
-        else if (preexisting_user.username().equals(user.username()) &&
-                 preexisting_user.password().equals(user.password()))
+        else if (preexisting_user.password().equals(user.password()))
         {
             // make them an authtoken and return the auth data
             AuthData authData = dataAccess.createAuth(username);
