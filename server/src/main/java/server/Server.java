@@ -3,6 +3,7 @@ package server;
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import org.eclipse.jetty.server.Authentication;
 import spark.*;
 import com.google.gson.Gson;
 import service.*;
@@ -14,15 +15,13 @@ import javax.xml.crypto.Data;
 
 public class Server {
     private final ClearService clear_service;
-    private final RegistrationService registration_service;
-    private final LoginService login_service;
+    private final UserService user_service;
 
     public Server()
     {
         DataAccess dataAccess = new MemoryDataAccess();
         clear_service = new ClearService(dataAccess);
-        registration_service = new RegistrationService(dataAccess);
-        login_service = new LoginService(dataAccess);
+        user_service = new UserService(dataAccess);
     }
 
     public int run(int desiredPort) {
@@ -50,7 +49,7 @@ public class Server {
         var user = new Gson().fromJson(req.body(), UserData.class);
         try
         {
-            AuthData data = login_service.login(user);
+            AuthData data = user_service.login(user);
             res.status(200);
             return new Gson().toJson(data);
         }
@@ -80,7 +79,7 @@ public class Server {
 
         try
         {
-            AuthData data = registration_service.register(new_user);
+            AuthData data = user_service.register(new_user);
             res.status(200);
             return new Gson().toJson(data);
         }
