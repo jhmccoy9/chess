@@ -80,4 +80,18 @@ public class UserService {
             throw new DataAccessException("Error: unauthorized");
         }
     }
+
+    public void logout(String authToken) throws DataAccessException
+    {
+        // see if the authtoken is valid
+        if (dataAccess.sessionExists(authToken))
+        {
+            dataAccess.deleteSession(authToken);
+        }
+        else
+        {
+            // session doesn't exist...
+            throw new DataAccessException("Error: unauthorized");
+        }
+    }
 }

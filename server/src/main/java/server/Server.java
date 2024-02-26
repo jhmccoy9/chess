@@ -33,6 +33,7 @@ public class Server {
         Spark.post("/user", this::registerUser);
         Spark.delete("/db", this::clearApp);
         Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
 
 
         Spark.awaitInitialization();
@@ -44,6 +45,29 @@ public class Server {
         Spark.awaitStop();
     }
 
+    private Object logoutUser(Request req, Response res)
+    {
+        String auth_token = req.headers("authorization");
+        try
+        {
+            user_service.logout(auth_token);
+            res.status(200);
+            return "{}";
+        }
+        catch (DataAccessException e)
+        {
+            ErrorData error = new ErrorData(e.getMessage());
+            String to_return = new Gson().toJson(error);
+            if (error.message().equals("Error: unauthorized"))
+            {
+                res.status(401);
+            }
+            else
+                res.status(500);
+
+            return  to_return;
+        }
+    }
     private Object loginUser(Request req, Response res)
     {
         var user = new Gson().fromJson(req.body(), UserData.class);

@@ -13,4 +13,8 @@ public interface DataAccess
     void createUser(String username, String password, String email);
 
     AuthData createAuth(String username);
+
+    boolean sessionExists(String auth_token);
+
+    void deleteSession(String auth_token);
 }

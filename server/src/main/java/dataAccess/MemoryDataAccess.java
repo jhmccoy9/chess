@@ -59,4 +59,34 @@ public class MemoryDataAccess implements DataAccess
         this.authData.add(to_add);
         return to_add;
     }
+
+    public boolean sessionExists(String auth_token)
+    {
+        boolean to_return = false;
+        // see if a session exists with the given auth token
+        for (AuthData data : this.authData)
+        {
+            if (data.authToken().equals(auth_token))
+            {
+                to_return = true;
+            }
+        }
+        return to_return;
+    }
+
+    public void deleteSession(String auth_token)
+    {
+        AuthData session = null;
+        // find the session in question
+        for (AuthData data : this.authData)
+        {
+            if (data.authToken().equals(auth_token))
+            {
+                session = data;
+            }
+        }
+        if (session != null)
+            this.authData.remove(session);
+        return;
+    }
 }
