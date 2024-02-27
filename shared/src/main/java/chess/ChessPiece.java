@@ -208,53 +208,30 @@ public class ChessPiece {
         // next, look at the capture options
         // to the left
         int newRow = row + direction;
-        int newCol = col - 1;
         // boundary check
-        if (newCol >= 1 && newCol <= 8 && newRow >= 1 && newRow <= 8) {
-            // make sure it's not null and an enemy
-            tempPosition = new ChessPosition(newRow, newCol);
-            if (board.getPiece(tempPosition) != null &&
-                    board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                // if you'd be at the end, promote, otherwise like normal
-                if ((tempPosition.getRow() == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
-                        (tempPosition.getRow() == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
-                    ChessMove tempMove = new ChessMove(myPosition, tempPosition, PieceType.QUEEN);
-                    possibleMoves.add(tempMove);
-                    tempMove = new ChessMove(myPosition, tempPosition, PieceType.BISHOP);
-                    possibleMoves.add(tempMove);
-                    tempMove = new ChessMove(myPosition, tempPosition, PieceType.ROOK);
-                    possibleMoves.add(tempMove);
-                    tempMove = new ChessMove(myPosition, tempPosition, PieceType.KNIGHT);
-                    possibleMoves.add(tempMove);
-                } else {
-                    ChessMove tempMove = new ChessMove(myPosition, tempPosition, null);
-                    possibleMoves.add(tempMove);
-                }
-            }
-        }
-
-        // to the right
-        newCol = col + 1;
-        // boundary check
-        if (newCol >= 1 && newCol <= 8 && newRow >= 1 && newRow <= 8) {
-            // make sure it's not null and an enemy
-            tempPosition = new ChessPosition(newRow, newCol);
-            if (board.getPiece(tempPosition) != null &&
-                    board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                // if you'd be at the end, promote, otherwise like normal
-                if ((tempPosition.getRow() == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
-                        (tempPosition.getRow() == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
-                    ChessMove tempMove = new ChessMove(myPosition, tempPosition, PieceType.QUEEN);
-                    possibleMoves.add(tempMove);
-                    tempMove = new ChessMove(myPosition, tempPosition, PieceType.BISHOP);
-                    possibleMoves.add(tempMove);
-                    tempMove = new ChessMove(myPosition, tempPosition, PieceType.ROOK);
-                    possibleMoves.add(tempMove);
-                    tempMove = new ChessMove(myPosition, tempPosition, PieceType.KNIGHT);
-                    possibleMoves.add(tempMove);
-                } else {
-                    ChessMove tempMove = new ChessMove(myPosition, tempPosition, null);
-                    possibleMoves.add(tempMove);
+        int[] directions = {col - 1, col + 1}; // cover both left and right
+        for (int newCol : directions)
+        {
+            if (newCol >= 1 && newCol <= 8 && newRow >= 1 && newRow <= 8) {
+                // make sure it's not null and an enemy
+                tempPosition = new ChessPosition(newRow, newCol);
+                if (board.getPiece(tempPosition) != null &&
+                        board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                    // if you'd be at the end, promote, otherwise like normal
+                    if ((tempPosition.getRow() == 8 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                            (tempPosition.getRow() == 1 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK)) {
+                        ChessMove tempMove = new ChessMove(myPosition, tempPosition, PieceType.QUEEN);
+                        possibleMoves.add(tempMove);
+                        tempMove = new ChessMove(myPosition, tempPosition, PieceType.BISHOP);
+                        possibleMoves.add(tempMove);
+                        tempMove = new ChessMove(myPosition, tempPosition, PieceType.ROOK);
+                        possibleMoves.add(tempMove);
+                        tempMove = new ChessMove(myPosition, tempPosition, PieceType.KNIGHT);
+                        possibleMoves.add(tempMove);
+                    } else {
+                        ChessMove tempMove = new ChessMove(myPosition, tempPosition, null);
+                        possibleMoves.add(tempMove);
+                    }
                 }
             }
         }
