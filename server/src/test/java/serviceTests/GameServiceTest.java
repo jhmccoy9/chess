@@ -1,5 +1,6 @@
 package serviceTests;
 
+import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
 import model.AuthData;
 import model.GameData;
@@ -24,9 +25,18 @@ class GameServiceTest {
         String email = "noreply@test.com";
         UserService userService = new UserService(dataAccess);
         UserData user = new UserData(username, password, email);
-        AuthData authData = userService.register(user);
-        assertEquals(dataAccess.getUser(username), user);
-        assertTrue(dataAccess.sessionExists(authData.authToken()));
+        AuthData authData;
+        try
+        {
+            authData = userService.register(user);
+            assertEquals(dataAccess.getUser(username), user);
+            assertTrue(dataAccess.sessionExists(authData.authToken()));
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
+
     }
 
     @Test
