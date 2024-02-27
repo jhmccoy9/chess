@@ -100,8 +100,8 @@ public class MemoryDataAccess implements DataAccess
             if (game.gameID() >= game_id)
                 game_id = game.gameID() + 1;
         }
-        // just autofill it with blank player names for the time being...
-        GameData new_game = new GameData(game_id, "", "", gameName, new ChessGame());
+        // just autofill it with blank player names as null for the time being...
+        GameData new_game = new GameData(game_id, null, null, gameName, new ChessGame());
         this.games.add(new_game);
         return new_game;
     }
@@ -117,5 +117,66 @@ public class MemoryDataAccess implements DataAccess
             }
         }
         return false;
+    }
+
+    public boolean gameExists(int gameID)
+    {
+        // go through all the games. if you find one by that name, return true;
+        for (GameData game : this.games)
+        {
+            if (game.gameID() == gameID)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Collection<GameData> listGames()
+    {
+        return this.games;
+    }
+
+    public GameData getGame(int gameId)
+    {
+        for (GameData game : this.listGames())
+        {
+            if (game.gameID() == gameId)
+                return game;
+        }
+        return null;
+    }
+
+    public void addPlayerToGame(int gameId, String authToken, boolean isWhite)
+    {
+        // get the data you need to start the process
+        GameData game = this.getGame(gameId);
+        String username = this.getUsername(authToken);
+
+        // make the new game
+        GameData new_game;
+        if (isWhite)
+            new_game = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+        else
+            new_game = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+
+        // pop the old game out and add the new one in
+        this.games.remove(game);
+        this.games.add(new_game);
+        return;
+    }
+
+    public String getUsername(String authToken)
+    {
+        // iterate over all the sessions
+        for (AuthData session : this.authData)
+        {
+            // if you find one that has that username, return it
+            if (session.authToken().equals(authToken))
+                return session.username();
+
+        }
+        // if nothing shows up, return null
+        return null;
     }
 }
