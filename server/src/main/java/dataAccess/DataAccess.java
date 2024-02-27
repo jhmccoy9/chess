@@ -1,6 +1,7 @@
 package dataAccess;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 public interface DataAccess
@@ -17,4 +18,8 @@ public interface DataAccess
     boolean sessionExists(String auth_token);
 
     void deleteSession(String auth_token);
+
+    GameData createGame(String gameName);
+
+    boolean gameExists(String gameName);
 }

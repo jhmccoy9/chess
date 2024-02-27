@@ -1,4 +1,5 @@
 package dataAccess;
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -88,5 +89,33 @@ public class MemoryDataAccess implements DataAccess
         if (session != null)
             this.authData.remove(session);
         return;
+    }
+
+    public GameData createGame(String gameName)
+    {
+        // get the id. For us, it will be one more than the max of the game ids
+        int game_id = 1;
+        for (GameData game : this.games)
+        {
+            if (game.gameID() >= game_id)
+                game_id = game.gameID() + 1;
+        }
+        // just autofill it with blank player names for the time being...
+        GameData new_game = new GameData(game_id, "", "", gameName, new ChessGame());
+        this.games.add(new_game);
+        return new_game;
+    }
+
+    public boolean gameExists(String gameName)
+    {
+        // go through all the games. if you find one by that name, return true;
+        for (GameData game : this.games)
+        {
+            if (game.gameName().equals(gameName))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

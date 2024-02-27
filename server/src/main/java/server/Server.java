@@ -16,12 +16,14 @@ import javax.xml.crypto.Data;
 public class Server {
     private final ClearService clear_service;
     private final UserService user_service;
+    private final GameService game_service;
 
     public Server()
     {
         DataAccess dataAccess = new MemoryDataAccess();
         clear_service = new ClearService(dataAccess);
         user_service = new UserService(dataAccess);
+        game_service = new GameService(dataAccess);
     }
 
     public int run(int desiredPort) {
@@ -34,6 +36,7 @@ public class Server {
         Spark.delete("/db", this::clearApp);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
+        Spark.post("/game", this::createGame);
 
 
         Spark.awaitInitialization();
@@ -45,6 +48,32 @@ public class Server {
         Spark.awaitStop();
     }
 
+
+    private Object createGame(Request req, Response res)
+    {
+        String auth_token = req.headers("authorization");
+        String game_name = (new Gson().fromJson(req.body(), GameData.class)).gameName();
+
+        try
+        {
+            String game_data = new Gson().toJson(game_service.createGame(auth_token, game_name));
+            res.status(200);
+            return game_data;
+        }
+        catch(DataAccessException e)
+        {
+            ErrorData error = new ErrorData(e.getMessage());
+            String to_return = new Gson().toJson(error);
+
+            if (error.message().equals("Error: unauthorized"))
+                res.status(401);
+            else if (error.message().equals("Error: bad request"))
+                res.status(400);
+            else
+                res.status(500);
+            return to_return;
+        }
+    }
     private Object logoutUser(Request req, Response res)
     {
         String auth_token = req.headers("authorization");
@@ -77,7 +106,6 @@ public class Server {
             res.status(200);
             return new Gson().toJson(data);
         }
-        // TODO: implement this!!!
         catch (DataAccessException e)
         {
             ErrorData error = new ErrorData(e.getMessage());
