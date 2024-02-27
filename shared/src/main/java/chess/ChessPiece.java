@@ -339,8 +339,8 @@ public class ChessPiece {
     }
 
 
-    // Define a method to handle the common logic
-    private void addPossibleMove1d(ChessBoard board, ChessPosition myPosition, int rowChange, int colChange, Collection<ChessMove> moves) {
+    // check for all possiblemoves in 1d for a rook
+    private void addPossibleRookMoves1d(ChessBoard board, ChessPosition myPosition, int rowChange, int colChange, Collection<ChessMove> moves) {
         boolean keepGoing = true;
 
         for (int row = myPosition.getRow() + rowChange, col = myPosition.getColumn() + colChange;
@@ -370,10 +370,10 @@ public class ChessPiece {
     {
         Collection<ChessMove> possibleMoves = new HashSet<>();
         // Call the method for each direction
-        addPossibleMove1d(board, myPosition, 1, 0, possibleMoves);  // Up
-        addPossibleMove1d(board, myPosition, -1, 0, possibleMoves); // Down
-        addPossibleMove1d(board, myPosition, 0, -1, possibleMoves); // Left
-        addPossibleMove1d(board, myPosition, 0, 1, possibleMoves);  // Right
+        addPossibleRookMoves1d(board, myPosition, 1, 0, possibleMoves);  // Up
+        addPossibleRookMoves1d(board, myPosition, -1, 0, possibleMoves); // Down
+        addPossibleRookMoves1d(board, myPosition, 0, -1, possibleMoves); // Left
+        addPossibleRookMoves1d(board, myPosition, 0, 1, possibleMoves);  // Right
         return possibleMoves;
     }
 
@@ -384,109 +384,33 @@ public class ChessPiece {
         // Bishop can move diagonally until it hits another player
         // or a boundary
         // four combinations: slope of 1 and -1 going forward and backward in time
+        int[][] directions = {{1, 1}, {1, -1}, {-1, -1}, {-1, 1}}; // Diagonal directions
+        for (int[] direction : directions) {
+            int y = myPosition.getRow() + direction[0];
+            int x = myPosition.getColumn() + direction[1];
+            boolean keepGoing = true;
 
-        // going up and to the right
-        int y = myPosition.getRow() + 1;
-        int x = myPosition.getColumn() + 1;
-        boolean keepGoing = true;
-        while (keepGoing && x <= 8 && y <= 8) {
-            ChessPosition tempPosition = new ChessPosition(y, x);
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
+            // boundary checking
+            while (keepGoing && x >= 1 && x <= 8 && y >= 1 && y <= 8) {
+                ChessPosition tempPosition = new ChessPosition(y, x);
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece targetPiece = board.getPiece(tempPosition);
+
+                if (targetPiece == null || targetPiece.getTeamColor() != myPiece.getTeamColor()) {
+                    ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
+                    possibleMoves.add(newMove);
+
+                    if (targetPiece != null) {
+                        keepGoing = false;
+                    }
+                } else {
+                    keepGoing = false;
+                }
+
+                x += direction[1];
+                y += direction[0];
             }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-            x++;y++;
         }
-
-        // going up and to the left
-        y = myPosition.getRow() + 1;
-        x = myPosition.getColumn() - 1;
-        keepGoing = true;
-        while (keepGoing && x >= 1 && y <= 8)
-        {
-            ChessPosition tempPosition = new ChessPosition(y, x);
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-
-            x--;y++;
-        }
-
-        // going down and to the left
-        y = myPosition.getRow() - 1;
-        x = myPosition.getColumn() - 1;
-        keepGoing = true;
-        while (keepGoing && x >= 1 && y >= 1)
-        {
-            ChessPosition tempPosition = new ChessPosition(y, x);
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-            x--;y--;
-        }
-
-        // going down and to the right
-        y = myPosition.getRow() - 1;
-        x = myPosition.getColumn() + 1;
-        keepGoing = true;
-        while (keepGoing && x <= 8 && y >= 1)
-        {
-            ChessPosition tempPosition = new ChessPosition(y, x);
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-
-            x++;y--;
-        }
-
         return possibleMoves;
-
     }
 }
