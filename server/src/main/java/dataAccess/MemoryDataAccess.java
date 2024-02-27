@@ -47,24 +47,23 @@ public class MemoryDataAccess implements DataAccess
 
     public void createUser(String username, String password, String email)
     {
-        UserData to_add = new UserData(username, password, email);
-        this.users.add(to_add);
+        this.users.add(new UserData(username, password, email));
         return;
     }
 
     public AuthData createAuth(String username) {
         // make a new auth token, add it to the list and return it.
-        AuthData to_add = new AuthData(UUID.randomUUID().toString(), username);
-        this.authData.add(to_add);
-        return to_add;
+        AuthData toAdd = new AuthData(UUID.randomUUID().toString(), username);
+        this.authData.add(toAdd);
+        return toAdd;
     }
 
-    public boolean sessionExists(String auth_token)
+    public boolean sessionExists(String authToken)
     {
         // see if a session exists with the given auth token
         for (AuthData data : this.authData)
         {
-            if (data.authToken().equals(auth_token))
+            if (data.authToken().equals(authToken))
             {
                 return true;
             }
@@ -72,13 +71,13 @@ public class MemoryDataAccess implements DataAccess
         return false;
     }
 
-    public void deleteSession(String auth_token)
+    public void deleteSession(String authToken)
     {
         AuthData session = null;
         // find the session in question
         for (AuthData data : this.authData)
         {
-            if (data.authToken().equals(auth_token))
+            if (data.authToken().equals(authToken))
             {
                 session = data;
             }
@@ -91,16 +90,16 @@ public class MemoryDataAccess implements DataAccess
     public GameData createGame(String gameName)
     {
         // get the id. For us, it will be one more than the max of the game ids
-        int game_id = 1;
+        int gameId = 1;
         for (GameData game : this.games)
         {
-            if (game.gameID() >= game_id)
-                game_id = game.gameID() + 1;
+            if (game.gameID() >= gameId)
+                gameId = game.gameID() + 1;
         }
         // just autofill it with blank player names as null for the time being...
-        GameData new_game = new GameData(game_id, null, null, gameName, new ChessGame());
-        this.games.add(new_game);
-        return new_game;
+        GameData newGame = new GameData(gameId, null, null, gameName, new ChessGame());
+        this.games.add(newGame);
+        return newGame;
     }
 
     public boolean gameExists(String gameName)
@@ -151,15 +150,15 @@ public class MemoryDataAccess implements DataAccess
         String username = this.getUsername(authToken);
 
         // make the new game
-        GameData new_game;
+        GameData newGame;
         if (isWhite)
-            new_game = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+            newGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
         else
-            new_game = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+            newGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
 
         // pop the old game out and add the new one in
         this.games.remove(game);
-        this.games.add(new_game);
+        this.games.add(newGame);
         return;
     }
 

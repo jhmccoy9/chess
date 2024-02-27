@@ -53,10 +53,7 @@ public class ChessPosition {
     }
 
     @Override
-    public String toString() {
-        String to_return = "Row: " + row + " Column: " + col;
-        return to_return;
-    }
+    public String toString() { return "Row: " + row + " Column: " + col;}
 
     @Override
     public int hashCode() {

@@ -27,11 +27,11 @@ public class ChessBoard {
         {
             for (int j = 1; j <= 8; j++)
             {
-                ChessPosition temp_position = new ChessPosition(i, j);
-                if (old.getPiece(temp_position) != null)
+                ChessPosition tempPosition = new ChessPosition(i, j);
+                if (old.getPiece(tempPosition) != null)
                 {
-                    ChessPiece temp_piece = new ChessPiece(old.getPiece(temp_position));
-                    this.addPiece(temp_position, temp_piece);
+                    ChessPiece tempPiece = new ChessPiece(old.getPiece(tempPosition));
+                    this.addPiece(tempPosition, tempPiece);
                 }
 
             }
@@ -169,15 +169,15 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        boolean to_return = true;
+        boolean toReturn = true;
         for (int i = 0; i < 8; i++)
         {
             if(!(Arrays.equals(board[i], that.board[i])))
             {
-                to_return = false;
+                toReturn = false;
             }
         }
-        return to_return;
+        return toReturn;
     }
 
     @Override

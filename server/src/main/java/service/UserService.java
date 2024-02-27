@@ -13,11 +13,11 @@ public class UserService {
         this.dataAccess = dataAccess;
     }
 
-    public AuthData register(UserData new_user) throws DataAccessException
+    public AuthData register(UserData newUser) throws DataAccessException
     {
-        String username = new_user.username();
-        String password = new_user.password();
-        String email = new_user.email();
+        String username = newUser.username();
+        String password = newUser.password();
+        String email = newUser.email();
 
         // make sure the username, password, and email are all valid
         if (username == null || password == null || email == null)
@@ -61,14 +61,14 @@ public class UserService {
             throw new DataAccessException("Error: bad request");
         }
 
-        UserData preexisting_user = dataAccess.getUser(username);
+        UserData preexistingUser = dataAccess.getUser(username);
         // bad news: user doesn't exist
-        if (preexisting_user == null)
+        if (preexistingUser == null)
         {
             throw new DataAccessException("Error: unauthorized");
         }
         // ideal: they're the same user
-        else if (preexisting_user.password().equals(user.password()))
+        else if (preexistingUser.password().equals(user.password()))
         {
             // make them an authtoken and return the auth data
             AuthData authData = dataAccess.createAuth(username);

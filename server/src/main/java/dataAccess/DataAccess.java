@@ -17,9 +17,9 @@ public interface DataAccess
 
     AuthData createAuth(String username);
 
-    boolean sessionExists(String auth_token);
+    boolean sessionExists(String authToken);
 
-    void deleteSession(String auth_token);
+    void deleteSession(String authToken);
 
     GameData createGame(String gameName);
 

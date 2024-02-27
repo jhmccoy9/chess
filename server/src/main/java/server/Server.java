@@ -11,16 +11,16 @@ import java.util.Map;
 
 
 public class Server {
-    private final ClearService clear_service;
-    private final UserService user_service;
-    private final GameService game_service;
+    private final ClearService clearService;
+    private final UserService userService;
+    private final GameService gameService;
 
     public Server()
     {
         DataAccess dataAccess = new MemoryDataAccess();
-        clear_service = new ClearService(dataAccess);
-        user_service = new UserService(dataAccess);
-        game_service = new GameService(dataAccess);
+        clearService = new ClearService(dataAccess);
+        userService = new UserService(dataAccess);
+        gameService = new GameService(dataAccess);
     }
 
     public int run(int desiredPort) {
@@ -50,22 +50,22 @@ public class Server {
     private Object joinGame(Request req, Response res)
     {
         // pull out all the data
-        String auth_token = req.headers("authorization");
+        String authToken = req.headers("authorization");
         String color = new Gson().fromJson(req.body(), JoinGameData.class).playerColor();
 
-        int game_id = (new Gson().fromJson(req.body(), JoinGameData.class)).gameID();
+        int gameID = (new Gson().fromJson(req.body(), JoinGameData.class)).gameID();
 
         // see if you can run it validly
         try
         {
-            game_service.joinGame(auth_token, color, game_id);
+            gameService.joinGame(authToken, color, gameID);
             res.status(200);
             return "{}";
         }
         catch (DataAccessException e)
         {
             ErrorData error = new ErrorData(e.getMessage());
-            String to_return = new Gson().toJson(error);
+            String toReturn = new Gson().toJson(error);
 
             switch (error.message()) {
                 case "Error: unauthorized" -> res.status(401);
@@ -73,28 +73,28 @@ public class Server {
                 case "Error: already taken" -> res.status(403);
                 default -> res.status(500);
             }
-            return to_return;
+            return toReturn;
         }
     }
 
     private Object listGames(Request req, Response res)
     {
-        String auth_token = req.headers("authorization");
+        String authToken = req.headers("authorization");
         try  // return a list of games if successful
         {
-            var games = game_service.listGames(auth_token).toArray();
+            var games = gameService.listGames(authToken).toArray();
             return new Gson().toJson(Map.of("games", games));
         }
         catch (DataAccessException e)
         {
             ErrorData error = new ErrorData(e.getMessage());
-            String to_return = new Gson().toJson(error);
+            String toReturn = new Gson().toJson(error);
 
             if (error.message().equals("Error: unauthorized"))
                 res.status(401);
             else
                 res.status(500);
-            return to_return;
+            return toReturn;
         }
 
 
@@ -102,19 +102,19 @@ public class Server {
 
     private Object createGame(Request req, Response res)
     {
-        String auth_token = req.headers("authorization");
-        String game_name = (new Gson().fromJson(req.body(), GameData.class)).gameName();
+        String authToken = req.headers("authorization");
+        String gameName = (new Gson().fromJson(req.body(), GameData.class)).gameName();
 
         try
         {
-            String game_data = new Gson().toJson(game_service.createGame(auth_token, game_name));
+            String gameData = new Gson().toJson(gameService.createGame(authToken, gameName));
             res.status(200);
-            return game_data;
+            return gameData;
         }
         catch(DataAccessException e)
         {
             ErrorData error = new ErrorData(e.getMessage());
-            String to_return = new Gson().toJson(error);
+            String toReturn = new Gson().toJson(error);
 
             if (error.message().equals("Error: unauthorized"))
                 res.status(401);
@@ -122,22 +122,22 @@ public class Server {
                 res.status(400);
             else
                 res.status(500);
-            return to_return;
+            return toReturn;
         }
     }
     private Object logoutUser(Request req, Response res)
     {
-        String auth_token = req.headers("authorization");
+        String authToken = req.headers("authorization");
         try
         {
-            user_service.logout(auth_token);
+            userService.logout(authToken);
             res.status(200);
             return "{}";
         }
         catch (DataAccessException e)
         {
             ErrorData error = new ErrorData(e.getMessage());
-            String to_return = new Gson().toJson(error);
+            String toReturn = new Gson().toJson(error);
             if (error.message().equals("Error: unauthorized"))
             {
                 res.status(401);
@@ -145,7 +145,7 @@ public class Server {
             else
                 res.status(500);
 
-            return  to_return;
+            return  toReturn;
         }
     }
     private Object loginUser(Request req, Response res)
@@ -153,14 +153,14 @@ public class Server {
         var user = new Gson().fromJson(req.body(), UserData.class);
         try
         {
-            AuthData data = user_service.login(user);
+            AuthData data = userService.login(user);
             res.status(200);
             return new Gson().toJson(data);
         }
         catch (DataAccessException e)
         {
             ErrorData error = new ErrorData(e.getMessage());
-            String to_return = new Gson().toJson(error);
+            String toReturn = new Gson().toJson(error);
             if (error.message().equals("Error: unauthorized"))
             {
                 res.status(401);
@@ -171,39 +171,39 @@ public class Server {
             }
 
 
-            return to_return;
+            return toReturn;
         }
     }
 
     private Object registerUser(Request req, Response res)
     {
         // deserialize the json object
-        var new_user = new Gson().fromJson(req.body(), UserData.class);
+        var newUser = new Gson().fromJson(req.body(), UserData.class);
 
         try
         {
-            AuthData data = user_service.register(new_user);
+            AuthData data = userService.register(newUser);
             res.status(200);
             return new Gson().toJson(data);
         }
         catch(DataAccessException e)
         {
             ErrorData error = new ErrorData(e.toString());
-            String to_return = new Gson().toJson(error);
+            String toReturn = new Gson().toJson(error);
 
 
             // see what kind it is, and return the right message based off of that
             if (e.getMessage().equals("Error: already taken"))
             {
                 res.status(403);
-                return to_return;
+                return toReturn;
             } else if (e.getMessage().equals("Error: bad request")) {
                 res.status(400);
-                return to_return;
+                return toReturn;
             }
             else {
                 res.status(500);
-                return to_return;
+                return toReturn;
             }
         }
     }
@@ -211,7 +211,7 @@ public class Server {
     private Object clearApp(Request req, Response res)
     {
         try {
-            clear_service.clear();
+            clearService.clear();
         }
         catch (DataAccessException e)
         {

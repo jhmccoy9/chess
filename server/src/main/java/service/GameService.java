@@ -60,24 +60,24 @@ public class GameService {
             // otherwise, add that player as playing the correct color
             else if (color.equals("WHITE"))
             {
-                boolean is_white = true;
+                boolean isWhite = true;
                 // make sure that nobody is already playing as that color
                 GameData game = dataAccess.getGame(gameId);
                 if (game.whiteUsername() != null)
                     throw new DataAccessException("Error: already taken");
                 // assuming the coast is clear, add that player to the game
-                dataAccess.addPlayerToGame(gameId, authToken, is_white);
+                dataAccess.addPlayerToGame(gameId, authToken, isWhite);
                 return;
             }
             else if (color.equals("BLACK"))
             {
-                boolean is_white = false;
+                boolean isWhite = false;
                 // make sure that nobody is already playing as that color
                 GameData game = dataAccess.getGame(gameId);
                 if (game.blackUsername() != null)
                     throw new DataAccessException("Error: already taken");
                 // assuming the coast is clear, add that player to the game
-                dataAccess.addPlayerToGame(gameId, authToken, is_white);
+                dataAccess.addPlayerToGame(gameId, authToken, isWhite);
                 return;
             }
             // bad color
