@@ -42,21 +42,26 @@ class GameServiceTest {
 
         // make the game
         GameService gameService = new GameService(dataAccess);
+        GameData gameData;
         try
         {
-            gameService.createGame(authData.authToken(), "name game");
+            gameData = gameService.createGame(authData.authToken(), "name game");
         }
         catch (DataAccessException e)
         {
             return;
         }
+        // make sure it returns the right game
+        assertEquals(dataAccess.getGame(gameData.gameID()), gameData);
 
-        // try registering the same user twice
+        // try making a new game of the same name
         assertThrows(DataAccessException.class, () -> {
-            userService.register(user);
+            gameService.createGame(authData.authToken(), "name game");
         });
-
-
+        // make a new game with a bad auth token
+        assertThrows(DataAccessException.class, () -> {
+            gameService.createGame("", "new game");
+        });
     }
 
     @Test
