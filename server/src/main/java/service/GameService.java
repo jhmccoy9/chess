@@ -55,8 +55,8 @@ public class GameService {
         // if the game and auth token are valid, make sure that color is available
         {
             // if the color is blank, they just want to be an observer. So it's fine or whatever
-            if (color == null)
-                return;
+            if (color == null) {
+            }
             // otherwise, add that player as playing the correct color
             else if (color.equals("WHITE"))
             {
@@ -67,7 +67,6 @@ public class GameService {
                     throw new DataAccessException("Error: already taken");
                 // assuming the coast is clear, add that player to the game
                 dataAccess.addPlayerToGame(gameId, authToken, isWhite);
-                return;
             }
             else if (color.equals("BLACK"))
             {
@@ -78,7 +77,6 @@ public class GameService {
                     throw new DataAccessException("Error: already taken");
                 // assuming the coast is clear, add that player to the game
                 dataAccess.addPlayerToGame(gameId, authToken, isWhite);
-                return;
             }
             // bad color
             else

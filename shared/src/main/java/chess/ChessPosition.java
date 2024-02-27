@@ -14,8 +14,8 @@ import java.util.Objects;
 public class ChessPosition {
 
     // class variables
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
 
     public ChessPosition(int row, int col)
@@ -67,9 +67,6 @@ public class ChessPosition {
             return true;
         else if (position == null || getClass() != position.getClass())
             return false;
-        else if (this.col == ((ChessPosition) position).getColumn() && this.row == ((ChessPosition) position).getRow()) {
-            return true;
-        }
-        return false;
+        else return this.col == ((ChessPosition) position).getColumn() && this.row == ((ChessPosition) position).getRow();
     }
 }

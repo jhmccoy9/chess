@@ -28,7 +28,6 @@ public class MemoryDataAccess implements DataAccess
         this.users.clear();
         this.authData.clear();
         this.games.clear();
-        return;
     }
 
     public UserData getUser(String username) {
@@ -48,7 +47,6 @@ public class MemoryDataAccess implements DataAccess
     public void createUser(String username, String password, String email)
     {
         this.users.add(new UserData(username, password, email));
-        return;
     }
 
     public AuthData createAuth(String username) {
@@ -84,7 +82,6 @@ public class MemoryDataAccess implements DataAccess
         }
         if (session != null)
             this.authData.remove(session);
-        return;
     }
 
     public GameData createGame(String gameName)
@@ -159,7 +156,6 @@ public class MemoryDataAccess implements DataAccess
         // pop the old game out and add the new one in
         this.games.remove(game);
         this.games.add(newGame);
-        return;
     }
 
     public String getUsername(String authToken)

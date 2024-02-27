@@ -13,7 +13,7 @@ import java.io.*;
 public class ChessGame {
 
     private ChessBoard board;
-    private Collection<ChessMove> moves;
+    private final Collection<ChessMove> moves;
     private ChessGame.TeamColor whoseTurn;
 
     public ChessGame()
@@ -185,7 +185,6 @@ public class ChessGame {
             throw new InvalidMoveException("Puts king in check");
         }
 
-        return;
     }
 
     /**
@@ -307,11 +306,7 @@ public class ChessGame {
         Collection<ChessMove> validMoves = this.validMoves(kingPosition);
 
         // if there are no valid moves, it's  in stalemate
-        if (validMoves.isEmpty())
-        {
-            return true;
-        }
-        return false;
+        return validMoves.isEmpty();
     }
 
     /**

@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class ChessBoard {
 
     // 2D array of pieces: the actual chessboard itself
-    private ChessPiece[][] board;
+    private final ChessPiece[][] board;
 
     public ChessBoard() {
         // initialize the chessboard. it is always 8x8
@@ -53,7 +53,6 @@ public class ChessBoard {
 
         // put the piece there
         this.board[row - 1][col - 1] = piece;
-        return;
         //throw new RuntimeException("Not implemented");
     }
 
@@ -161,7 +160,6 @@ public class ChessBoard {
         String temp = this.toString();
 
 
-        return;
     }
 
     @Override
@@ -172,9 +170,9 @@ public class ChessBoard {
         boolean toReturn = true;
         for (int i = 0; i < 8; i++)
         {
-            if(!(Arrays.equals(board[i], that.board[i])))
-            {
+            if (!(Arrays.equals(board[i], that.board[i]))) {
                 toReturn = false;
+                break;
             }
         }
         return toReturn;

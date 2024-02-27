@@ -12,9 +12,9 @@ import java.util.*;
  */
 public class ChessPiece {
 
-    private PieceType type;
-    private ChessGame.TeamColor color;
-    private boolean moved;
+    private final PieceType type;
+    private final ChessGame.TeamColor color;
+    private final boolean moved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
@@ -31,7 +31,6 @@ public class ChessPiece {
 
     // getters and setters for moved
     public boolean hasMoved() {return this.moved;}
-    public void setMoved() {this.moved = true;}
 
     @Override
     public String toString() {
@@ -84,14 +83,7 @@ public class ChessPiece {
             return true;
         else if (piece == null || getClass() != piece.getClass())
             return false;
-        else if (this.color == ((ChessPiece) piece).color && this.type == ((ChessPiece) piece).type)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        else return this.color == ((ChessPiece) piece).color && this.type == ((ChessPiece) piece).type;
     }
 
     /**
@@ -169,6 +161,10 @@ public class ChessPiece {
 
         return possibleMoves;
     }
+
+
+
+
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new HashSet<ChessMove>() {

@@ -18,7 +18,7 @@ public class ClearService {
     {
 
         dataAccess.clear();
-        if (false || (false && true))
+        if (false)
             throw new DataAccessException("this ain't gonna work");
     }
 }
