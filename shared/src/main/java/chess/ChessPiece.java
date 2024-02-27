@@ -1,6 +1,5 @@
 package chess;
 
-import java.sql.Array;
 import java.util.*;
 
 
@@ -339,105 +338,43 @@ public class ChessPiece {
         return possibleMoves;
     }
 
+
+    // Define a method to handle the common logic
+    private void addPossibleMove1d(ChessBoard board, ChessPosition myPosition, int rowChange, int colChange, Collection<ChessMove> moves) {
+        boolean keepGoing = true;
+
+        for (int row = myPosition.getRow() + rowChange, col = myPosition.getColumn() + colChange;
+             (row >= 1 && row <= 8 && col >= 1 && col <= 8) && keepGoing;
+             row += rowChange, col += colChange) {
+
+            ChessPosition tempPosition = new ChessPosition(row, col);
+            ChessPiece myPiece = board.getPiece(myPosition);
+            ChessPiece targetPiece = board.getPiece(tempPosition);
+
+            if (targetPiece == null || targetPiece.getTeamColor() != myPiece.getTeamColor()) {
+                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
+                moves.add(newMove);
+
+                if (targetPiece != null) {
+                    keepGoing = false;
+                }
+            } else {
+                keepGoing = false;
+            }
+        }
+    }
+
+
+
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition)
     {
-        Collection<ChessMove> possibleMoves = new HashSet<ChessMove>(){};
-        // go in each of the possible four directions until an obstacle is hit or you hit the edge
-        //move up
-        boolean keepGoing = true;
-        for (int row = myPosition.getRow() + 1; (row <= 8) && keepGoing; row++)
-        {
-            ChessPosition tempPosition = new ChessPosition(row, myPosition.getColumn());
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-
-        }
-
-        // go down
-        keepGoing = true;
-        for (int row = myPosition.getRow() - 1; (row >= 1) && keepGoing; row--)
-        {
-            ChessPosition tempPosition = new ChessPosition(row, myPosition.getColumn());
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-
-        }
-
-        // go left
-        keepGoing = true;
-        for (int col = myPosition.getColumn() - 1; (col >= 1) && keepGoing; col--)
-        {
-            ChessPosition tempPosition = new ChessPosition(myPosition.getRow(), col);
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-
-        }
-
-        // go right
-        keepGoing = true;
-        for (int col = myPosition.getColumn() + 1; (col <= 8) && keepGoing; col++)
-        {
-            ChessPosition tempPosition = new ChessPosition(myPosition.getRow(), col);
-            if (board.getPiece(tempPosition) == null)
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-            }
-            else if(board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())
-            {
-                ChessMove newMove = new ChessMove(myPosition, tempPosition, null);
-                possibleMoves.add(newMove);
-                keepGoing = false;
-            }
-            else
-            {
-                keepGoing = false;
-            }
-
-        }
-
-
+        Collection<ChessMove> possibleMoves = new HashSet<>();
+        // Call the method for each direction
+        addPossibleMove1d(board, myPosition, 1, 0, possibleMoves);  // Up
+        addPossibleMove1d(board, myPosition, -1, 0, possibleMoves); // Down
+        addPossibleMove1d(board, myPosition, 0, -1, possibleMoves); // Left
+        addPossibleMove1d(board, myPosition, 0, 1, possibleMoves);  // Right
         return possibleMoves;
-
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition)
