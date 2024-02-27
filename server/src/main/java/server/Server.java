@@ -3,14 +3,10 @@ package server;
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
-import org.eclipse.jetty.server.Authentication;
 import spark.*;
 import com.google.gson.Gson;
 import service.*;
 import model.*;
-
-import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.util.Map;
 
 
@@ -71,14 +67,12 @@ public class Server {
             ErrorData error = new ErrorData(e.getMessage());
             String to_return = new Gson().toJson(error);
 
-            if (error.message().equals("Error: unauthorized"))
-                res.status(401);
-            else if (error.message().equals("Error: bad request"))
-                res.status(400);
-            else if (error.message().equals("Error: already taken"))
-                res.status(403);
-            else
-                res.status(500);
+            switch (error.message()) {
+                case "Error: unauthorized" -> res.status(401);
+                case "Error: bad request" -> res.status(400);
+                case "Error: already taken" -> res.status(403);
+                default -> res.status(500);
+            }
             return to_return;
         }
     }
@@ -89,8 +83,7 @@ public class Server {
         try  // return a list of games if successful
         {
             var games = game_service.listGames(auth_token).toArray();
-            String to_return = new Gson().toJson(Map.of("games", games));
-            return to_return;
+            return new Gson().toJson(Map.of("games", games));
         }
         catch (DataAccessException e)
         {

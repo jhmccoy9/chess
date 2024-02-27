@@ -3,11 +3,9 @@ import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 
 public class MemoryDataAccess implements DataAccess
@@ -63,16 +61,15 @@ public class MemoryDataAccess implements DataAccess
 
     public boolean sessionExists(String auth_token)
     {
-        boolean to_return = false;
         // see if a session exists with the given auth token
         for (AuthData data : this.authData)
         {
             if (data.authToken().equals(auth_token))
             {
-                to_return = true;
+                return true;
             }
         }
-        return to_return;
+        return false;
     }
 
     public void deleteSession(String auth_token)
