@@ -16,7 +16,6 @@ public class ClearService {
 
     public void clear() throws DataAccessException
     {
-
         dataAccess.clear();
         if (false)
             throw new DataAccessException("this ain't gonna work");
