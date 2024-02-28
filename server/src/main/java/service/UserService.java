@@ -4,6 +4,7 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import model.*;
 
+
 public class UserService {
 
     private final DataAccess dataAccess;

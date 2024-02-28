@@ -37,7 +37,6 @@ public class MemoryDataAccess implements DataAccess
             // if you find one that has that username, return it
             if (user.username().equals(username))
                 return user;
-
         }
 
         // if nothing shows up, return null
