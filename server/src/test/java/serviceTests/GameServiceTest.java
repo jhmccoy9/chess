@@ -20,7 +20,7 @@ class GameServiceTest {
 
 
     @Test
-    void createGame()
+    void createGameSuccess()
     {
         // make a new user
         String username = "test_username";
@@ -53,6 +53,40 @@ class GameServiceTest {
         }
         // make sure it returns the right game
         assertEquals(dataAccess.getGame(gameData.gameID()), gameData);
+    }
+
+    @Test
+    void createGameFail()
+    {
+        // make a new user
+        String username = "test_username";
+        String password = "password123";
+        String email = "noreply@test.com";
+        UserService userService = new UserService(dataAccess);
+        UserData user = new UserData(username, password, email);
+        AuthData authData;
+        try
+        {
+            authData = userService.register(user);
+            assertEquals(dataAccess.getUser(username), user);
+            assertTrue(dataAccess.sessionExists(authData.authToken()));
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
+
+        // make the game
+        GameService gameService = new GameService(dataAccess);
+        GameData gameData;
+        try
+        {
+            gameData = gameService.createGame(authData.authToken(), "name game");
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
 
         // try making a new game of the same name
         assertThrows(DataAccessException.class, () -> {
@@ -67,8 +101,32 @@ class GameServiceTest {
     @Test
     void listGames()
     {
-        assertEquals(1,1);
-        assertNotEquals(1,0);
+        // make a new user
+        String username = "test_username";
+        String password = "password123";
+        String email = "noreply@test.com";
+        UserService userService = new UserService(dataAccess);
+        UserData user = new UserData(username, password, email);
+        AuthData authData;
+        try
+        {
+            authData = userService.register(user);
+            assertEquals(dataAccess.getUser(username), user);
+            assertTrue(dataAccess.sessionExists(authData.authToken()));
+            // make the game
+            GameService gameService = new GameService(dataAccess);
+            GameData gameData;
+            gameData = gameService.createGame(authData.authToken(), "name game");
+            gameData = gameService.createGame(authData.authToken(), "game 2");
+            gameData = gameService.createGame(authData.authToken(), "vive le quebec");
+            assertEquals(3, gameService.listGames(authData.authToken()).size());
+            return;
+        }
+        catch (DataAccessException e)
+        {
+            // if it gets here, you have a problem
+            assertEquals(1,0);
+        }
     }
 
     @Test
