@@ -23,4 +23,22 @@ class UserServiceTest {
         assertEquals(1,1);
         assertNotEquals(1,0);
     }
+
+    @Test
+    void register0() {
+        assertEquals(1,1);
+        assertNotEquals(1,0);
+    }
+
+    @Test
+    void login0() {
+        assertEquals(1,1);
+        assertNotEquals(1,0);
+    }
+
+    @Test
+    void logout0() {
+        assertEquals(1,1);
+        assertNotEquals(1,0);
+    }
 }

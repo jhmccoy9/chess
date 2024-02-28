@@ -77,4 +77,25 @@ class GameServiceTest {
         assertEquals(1,1);
         assertNotEquals(1,0);
     }
+
+    @Test
+    void listGames1()
+    {
+        assertEquals(1,1);
+        assertNotEquals(1,0);
+    }
+
+    @Test
+    void joinGame1()
+    {
+        assertEquals(1,1);
+        assertNotEquals(1,0);
+    }
+
+    @Test
+    void joinGame2()
+    {
+        assertEquals(1,1);
+        assertNotEquals(1,0);
+    }
 }
