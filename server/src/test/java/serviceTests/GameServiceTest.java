@@ -99,7 +99,7 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames()
+    void listGamesNormal()
     {
         // make a new user
         String username = "test_username";
@@ -130,30 +130,111 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGame()
+    void listGamesBadAuth()
     {
-        assertEquals(1,1);
-        assertNotEquals(1,0);
+        // make a new user
+        String username = "test_username";
+        String password = "password123";
+        String email = "noreply@test.com";
+        UserService userService = new UserService(dataAccess);
+        UserData user = new UserData(username, password, email);
+        AuthData authData;
+        GameService gameService;
+        try
+        {
+            authData = userService.register(user);
+            assertEquals(dataAccess.getUser(username), user);
+            assertTrue(dataAccess.sessionExists(authData.authToken()));
+            // make the game
+            gameService = new GameService(dataAccess);
+            GameData gameData;
+            gameData = gameService.createGame(authData.authToken(), "name game");
+            gameData = gameService.createGame(authData.authToken(), "game 2");
+            assertThrows(DataAccessException.class, () -> {
+                gameService.listGames("not a real token");
+            });
+        }
+        catch (DataAccessException e)
+        {
+            // if it gets here, you have a problem
+            assertEquals(1,0);
+        }
     }
 
     @Test
-    void listGames1()
+    void joinGameSuccess()
     {
-        assertEquals(1,1);
-        assertNotEquals(1,0);
+        // make a new user
+        String username = "test_username";
+        String password = "password123";
+        String email = "noreply@test.com";
+        UserService userService = new UserService(dataAccess);
+        UserData user = new UserData(username, password, email);
+        AuthData authData;
+        try
+        {
+            authData = userService.register(user);
+            assertEquals(dataAccess.getUser(username), user);
+            assertTrue(dataAccess.sessionExists(authData.authToken()));
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
+
+        // make the game
+        GameService gameService = new GameService(dataAccess);
+        GameData gameData;
+        try
+        {
+            gameData = gameService.createGame(authData.authToken(), "name game");
+            gameService.joinGame(authData.authToken(), "WHITE", gameData.gameID());
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
+
+        // make sure it has the right player in there
+        assertEquals(user.username(), dataAccess.getGame(gameData.gameID()).whiteUsername());
     }
 
-    @Test
-    void joinGame1()
-    {
-        assertEquals(1,1);
-        assertNotEquals(1,0);
-    }
 
     @Test
-    void joinGame2()
+    void joinGameBadColor()
     {
-        assertEquals(1,1);
-        assertNotEquals(1,0);
+        // make a new user
+        String username = "test_username";
+        String password = "password123";
+        String email = "noreply@test.com";
+        UserService userService = new UserService(dataAccess);
+        UserData user = new UserData(username, password, email);
+        AuthData authData;
+        try
+        {
+            authData = userService.register(user);
+            assertEquals(dataAccess.getUser(username), user);
+            assertTrue(dataAccess.sessionExists(authData.authToken()));
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
+
+        // make the game
+        GameService gameService = new GameService(dataAccess);
+        GameData gameData;
+        try
+        {
+            gameData = gameService.createGame(authData.authToken(), "name game");
+
+            // make sure it throws if you do a bad color
+            assertThrows(DataAccessException.class, () -> {
+                gameService.joinGame(authData.authToken(), "NOT A COLOR HERE", gameData.gameID());            });
+        }
+        catch (DataAccessException e)
+        {
+            return;
+        }
     }
 }
