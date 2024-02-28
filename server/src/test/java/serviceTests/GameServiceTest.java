@@ -53,6 +53,7 @@ class GameServiceTest {
         }
         // make sure it returns the right game
         assertEquals(dataAccess.getGame(gameData.gameID()), gameData);
+        dataAccess.clear();
     }
 
     @Test
@@ -96,15 +97,15 @@ class GameServiceTest {
         assertThrows(DataAccessException.class, () -> {
             gameService.createGame("", "new game");
         });
+        dataAccess.clear();
     }
 
     @Test
-    void listGamesNormal()
-    {
+    void listGamesNormal() throws DataAccessException {
         // make a new user
-        String username = "test_username";
-        String password = "password123";
-        String email = "noreply@test.com";
+        String username = "test_username1";
+        String password = "password1231";
+        String email = "noreply1@test.com";
         UserService userService = new UserService(dataAccess);
         UserData user = new UserData(username, password, email);
         AuthData authData;
@@ -116,16 +117,17 @@ class GameServiceTest {
             // make the game
             GameService gameService = new GameService(dataAccess);
             GameData gameData;
-            gameData = gameService.createGame(authData.authToken(), "name game");
+            gameData = gameService.createGame(authData.authToken(), "name game2.0");
             gameData = gameService.createGame(authData.authToken(), "game 2");
             gameData = gameService.createGame(authData.authToken(), "vive le quebec");
             assertEquals(3, gameService.listGames(authData.authToken()).size());
+            dataAccess.clear();
             return;
         }
         catch (DataAccessException e)
         {
             // if it gets here, you have a problem
-            assertEquals(1,0);
+            throw e;
         }
     }
 
@@ -153,6 +155,7 @@ class GameServiceTest {
             assertThrows(DataAccessException.class, () -> {
                 gameService.listGames("not a real token");
             });
+            dataAccess.clear();
         }
         catch (DataAccessException e)
         {
@@ -197,6 +200,7 @@ class GameServiceTest {
 
         // make sure it has the right player in there
         assertEquals(user.username(), dataAccess.getGame(gameData.gameID()).whiteUsername());
+        dataAccess.clear();
     }
 
 
@@ -236,5 +240,6 @@ class GameServiceTest {
         {
             return;
         }
+        dataAccess.clear();
     }
 }
