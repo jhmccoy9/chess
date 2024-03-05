@@ -3,6 +3,7 @@ package service;
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import model.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 public class UserService {
@@ -30,11 +31,15 @@ public class UserService {
             throw new DataAccessException("Error: bad request");
         }
 
+        // hash the password
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+
         UserData user = dataAccess.getUser(username);
         if (user == null)
         {
             // good news: make the new user
-            dataAccess.createUser(username, password, email);
+            dataAccess.createUser(username, hashedPassword, email);
 
             // make that authtoken
             AuthData authData = dataAccess.createAuth(username);
@@ -62,14 +67,16 @@ public class UserService {
             throw new DataAccessException("Error: bad request");
         }
 
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         UserData preexistingUser = dataAccess.getUser(username);
         // bad news: user doesn't exist
         if (preexistingUser == null)
         {
             throw new DataAccessException("Error: unauthorized");
         }
-        // ideal: they're the same user
-        else if (preexistingUser.password().equals(user.password()))
+        // ideal: they're the same user with the same hashed password
+        else if (encoder.matches(password, preexistingUser.password()))
         {
             // make them an authtoken and return the auth data
             AuthData authData = dataAccess.createAuth(username);
