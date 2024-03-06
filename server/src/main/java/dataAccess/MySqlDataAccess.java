@@ -12,8 +12,38 @@ import java.sql.*;
 
 public class MySqlDataAccess implements DataAccess{
 
-    public MySqlDataAccess()
-    {
+    private final String[] setupStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                `username` varchar(256) NOT NULL,
+                `password` varchar(256) NOT NULL,
+                `email` varchar(256) NOT NULL,
+                PRIMARY KEY (`username`),
+                INDEX(email)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS  authData (
+            `username` varchar(256) NOT NULL,
+            `authToken` varchar(256) NOT NULL,
+            PRIMARY KEY (`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS  games (
+            `gameID` int NOT NULL,
+            `whiteUsername` varchar(256) DEFAULT NULL,
+            `blackUsername` varchar(256) DEFAULT NULL,
+            `gameName` varchar(256) NOT NULL,
+            `game` TEXT NOT NULL,
+            PRIMARY KEY (`gameID`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+    public MySqlDataAccess() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection())
         {
@@ -27,7 +57,8 @@ public class MySqlDataAccess implements DataAccess{
         }
         catch (SQLException e)
         {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException("Unable to configure database");
+            //throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
     public void clear() throws DataAccessException {

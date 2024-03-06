@@ -3,6 +3,7 @@ package server;
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import dataAccess.MySqlDataAccess;
 import spark.*;
 import com.google.gson.Gson;
 import service.*;
@@ -11,16 +12,28 @@ import java.util.Map;
 
 
 public class Server {
-    private final ClearService clearService;
-    private final UserService userService;
-    private final GameService gameService;
+    private ClearService clearService;
+    private UserService userService;
+    private GameService gameService;
 
     public Server()
     {
-        DataAccess dataAccess = new MemoryDataAccess();
-        clearService = new ClearService(dataAccess);
-        userService = new UserService(dataAccess);
-        gameService = new GameService(dataAccess);
+        DataAccess dataAccess;
+        try
+        {
+            dataAccess = new MySqlDataAccess();
+            clearService = new ClearService(dataAccess);
+            userService = new UserService(dataAccess);
+            gameService = new GameService(dataAccess);
+        }
+        catch (DataAccessException e)
+        {
+            dataAccess = new MemoryDataAccess();
+            clearService = new ClearService(dataAccess);
+            userService = new UserService(dataAccess);
+            gameService = new GameService(dataAccess);
+        }
+
     }
 
     public int run(int desiredPort) {
