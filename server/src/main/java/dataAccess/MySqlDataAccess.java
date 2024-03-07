@@ -130,6 +130,7 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
         return null;
     }
@@ -142,6 +143,8 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
+
         }
     }
 
@@ -155,6 +158,7 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
         return new AuthData(authToken, username);
     }
@@ -175,9 +179,9 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
-
-        return false;
+        //return false;
     }
 
     public void deleteSession(String authToken) {
@@ -189,6 +193,7 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
         return;
     }
@@ -223,8 +228,10 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
+
         }
-        return false;
+//        return false;
     }
 
     public boolean gameExists(int gameID) {
@@ -243,8 +250,10 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
+
         }
-        return false;
+//        return false;
     }
 
     public Collection<GameData> listGames() {
@@ -272,6 +281,7 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
         return toReturn;
     }
@@ -300,6 +310,7 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
         return null;
     }
@@ -321,6 +332,7 @@ public class MySqlDataAccess implements DataAccess{
         } catch (DataAccessException e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
     }
 
@@ -343,6 +355,7 @@ public class MySqlDataAccess implements DataAccess{
         catch (Exception e)
         {
             System.out.println("you need to figure out what to do with this");
+            throw new RuntimeException();
         }
         return null;
     }
