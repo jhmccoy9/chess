@@ -16,6 +16,9 @@ public class GameService {
 
     public GameData createGame(String authToken, String gameName) throws DataAccessException
     {
+        // the game name cannot be null
+        if (gameName == null)
+            throw new DataAccessException("Error: bad request");
         // make sure the auth token is valid
         if (dataAccess.sessionExists(authToken))
         {
