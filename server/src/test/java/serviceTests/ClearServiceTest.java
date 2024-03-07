@@ -27,7 +27,8 @@ class ClearServiceTest {
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
             assertTrue(dataAccess.sessionExists(authData.authToken()));
             // make the game
             GameService gameService = new GameService(dataAccess);

@@ -9,6 +9,8 @@ import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.GameService;
 import service.UserService;
 
@@ -32,7 +34,8 @@ class GameServiceTest {
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
             assertTrue(dataAccess.sessionExists(authData.authToken()));
         }
         catch (DataAccessException e)
@@ -69,7 +72,8 @@ class GameServiceTest {
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
             assertTrue(dataAccess.sessionExists(authData.authToken()));
         }
         catch (DataAccessException e)
@@ -112,7 +116,8 @@ class GameServiceTest {
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
             assertTrue(dataAccess.sessionExists(authData.authToken()));
             // make the game
             GameService gameService = new GameService(dataAccess);
@@ -139,13 +144,17 @@ class GameServiceTest {
         String password = "password123";
         String email = "noreply@test.com";
         UserService userService = new UserService(dataAccess);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
         UserData user = new UserData(username, password, email);
         AuthData authData;
         GameService gameService;
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
+
             assertTrue(dataAccess.sessionExists(authData.authToken()));
             // make the game
             gameService = new GameService(dataAccess);
@@ -177,7 +186,8 @@ class GameServiceTest {
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
             assertTrue(dataAccess.sessionExists(authData.authToken()));
         }
         catch (DataAccessException e)
@@ -217,7 +227,8 @@ class GameServiceTest {
         try
         {
             authData = userService.register(user);
-            assertEquals(dataAccess.getUser(username), user);
+            assertEquals(dataAccess.getUser(username).username(), user.username());
+            assertEquals(dataAccess.getUser(username).email(), user.email());
             assertTrue(dataAccess.sessionExists(authData.authToken()));
         }
         catch (DataAccessException e)
