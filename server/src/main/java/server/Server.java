@@ -50,7 +50,6 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.put("/game", this::joinGame);
 
-
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -86,6 +85,7 @@ public class Server {
                 case "Error: already taken" -> res.status(403);
                 default -> res.status(500);
             }
+            System.out.println(error.message());
             return toReturn;
         }
     }
@@ -107,6 +107,7 @@ public class Server {
                 res.status(401);
             else
                 res.status(500);
+            System.out.println(error.message());
             return toReturn;
         }
 
@@ -135,6 +136,7 @@ public class Server {
                 res.status(400);
             else
                 res.status(500);
+            System.out.println(error.message());
             return toReturn;
         }
     }
@@ -157,7 +159,7 @@ public class Server {
             }
             else
                 res.status(500);
-
+            System.out.println(error.message());
             return  toReturn;
         }
     }
@@ -181,6 +183,7 @@ public class Server {
             else
             {
                 res.status(500);
+                System.out.println(error.message());
             }
 
 
@@ -192,7 +195,6 @@ public class Server {
     {
         // deserialize the json object
         var newUser = new Gson().fromJson(req.body(), UserData.class);
-
         try
         {
             AuthData data = userService.register(newUser);
@@ -203,8 +205,6 @@ public class Server {
         {
             ErrorData error = new ErrorData(e.toString());
             String toReturn = new Gson().toJson(error);
-
-
             // see what kind it is, and return the right message based off of that
             if (e.getMessage().equals("Error: already taken"))
             {
@@ -216,6 +216,7 @@ public class Server {
             }
             else {
                 res.status(500);
+                System.out.println(error.message());
                 return toReturn;
             }
         }
@@ -230,6 +231,8 @@ public class Server {
         {
             // if there's an error
             res.status(500);
+            System.out.println("Error: bad clear attempt");
+
             return new Gson().toJson(new model.ErrorData("Error: bad clear attempt"));
         }
 
