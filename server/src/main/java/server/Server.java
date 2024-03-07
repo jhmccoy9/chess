@@ -215,7 +215,7 @@ public class Server {
                 return toReturn;
             }
             else {
-                res.status(400);
+                res.status(500);
                 System.out.println(error.message());
                 return toReturn;
             }
