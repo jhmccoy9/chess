@@ -198,6 +198,12 @@ public class MySqlDataAccess implements DataAccess{
     }
 
     public GameData createGame(String gameName) {
+        if (gameName == null)
+        {
+            System.out.println("you need to figure out what to do with this");
+            return null;
+        }
+
         var statement = "INSERT INTO games (gameName, game) VALUES (?,?)";
         ChessGame newGame = new ChessGame();
         var gameJson = new Gson().toJson(newGame);
