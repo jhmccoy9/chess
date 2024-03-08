@@ -360,5 +360,22 @@ class dataAccessTest {
         }
     }
 
+    @Test
+    void addValidUserTest()
+    {
+        GameData game = dataAccess.createGame("game");
+        AuthData data = dataAccess.createAuth("person");
+
+        assertDoesNotThrow(() -> dataAccess.addPlayerToGame(game.gameID(), data.authToken(), true));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
