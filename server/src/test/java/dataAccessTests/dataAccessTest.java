@@ -125,5 +125,43 @@ class dataAccessTest {
         // throw a random authtoken in there and make sure it doesn't work
         assertFalse(dataAccess.sessionExists("ceci n'est pas un symbole d'autentification"));
     }
+
+    @Test
+    void deleteValidSessionTest()
+    {
+        // make a valid session
+        String username = "user";
+        String password = "passe";
+        String email = "courriel";
+        // make sure it exists after you run the code
+        dataAccess.createUser(username, password, email);
+        AuthData authData = dataAccess.createAuth(username);
+
+        // make sure it deletes just fine
+        assertDoesNotThrow(() -> dataAccess.deleteSession(authData.authToken()));
+    }
+
+    @Test
+    void deleteInvalidSessionTest()
+    {
+        // make a valid session
+        String username = "user";
+        String password = "passe";
+        String email = "courriel";
+        // make sure it exists after you run the code
+        dataAccess.createUser(username, password, email);
+        AuthData authData = dataAccess.createAuth(username);
+
+        // if you try to delete someone that doesn't exist, the existing person should still be there
+        dataAccess.deleteSession("definitely super sus");
+        assertTrue(dataAccess.sessionExists(authData.authToken()));
+    }
+
+    @Test
+    void validGameCreationTest()
+    {
+
+    }
+
 }
 
