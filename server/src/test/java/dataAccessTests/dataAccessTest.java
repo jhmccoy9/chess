@@ -3,6 +3,7 @@ package dataAccessTests;
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MySqlDataAccess;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,43 @@ class dataAccessTest {
         String password = "passe";
         String email = null;
         assertThrows(Exception.class, () -> dataAccess.createUser(username, password, email));
+    }
+
+    @Test
+    void createValidAuthTest()
+    {
+        // make sure it's making valid authtokens
+        String username = "some guy i guess";
+        AuthData authData = dataAccess.createAuth(username);
+        assertNotNull(authData.authToken());
+    }
+
+    @Test
+    void createInvalidAuthTest()
+    {
+        // make sure it crashes if you put in no username
+        String username = null;
+        assertThrows(Exception.class, () -> dataAccess.createAuth(username));
+    }
+
+    @Test
+    void validSessionExistsTest()
+    {
+        // make a user and a session
+        String username = "user";
+        String password = "passe";
+        String email = "courriel";
+        // make sure it exists after you run the code
+        dataAccess.createUser(username, password, email);
+        AuthData authData = dataAccess.createAuth(username);
+        assertTrue(dataAccess.sessionExists(authData.authToken()));
+    }
+
+    @Test
+    void invalidSessionExistsTest()
+    {
+        // throw a random authtoken in there and make sure it doesn't work
+        assertFalse(dataAccess.sessionExists("ceci n'est pas un symbole d'autentification"));
     }
 }
 
