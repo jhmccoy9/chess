@@ -135,6 +135,8 @@ public class MySqlDataAccess implements DataAccess{
     }
 
     public void createUser(String username, String password, String email) {
+        if (username == null || password == null || email == null)
+            return;
         var statement = "INSERT INTO users (username, password, email) VALUES (?,?,?)";
         try {
             executeUpdate(statement, username, password, email);

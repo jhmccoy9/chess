@@ -68,6 +68,14 @@ class dataAccessTest {
         dataAccess.createUser(username, password, email);
         UserData user = dataAccess.getUser(username);
         assertNotEquals(user, new UserData(username, "bad password", email));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -78,6 +86,14 @@ class dataAccessTest {
         String password = "passe";
         String email = "courriel";
         assertDoesNotThrow(() -> dataAccess.createUser(username, password, email));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -87,7 +103,16 @@ class dataAccessTest {
         String username = "user";
         String password = "passe";
         String email = null;
-        assertThrows(Exception.class, () -> dataAccess.createUser(username, password, email));
+        dataAccess.createUser(username, password, email);
+        assertNull(dataAccess.getUser(username));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -97,6 +122,14 @@ class dataAccessTest {
         String username = "some guy i guess";
         AuthData authData = dataAccess.createAuth(username);
         assertNotNull(authData.authToken());
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -105,6 +138,14 @@ class dataAccessTest {
         // make sure it crashes if you put in no username
         String username = null;
         assertThrows(Exception.class, () -> dataAccess.createAuth(username));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -118,6 +159,14 @@ class dataAccessTest {
         dataAccess.createUser(username, password, email);
         AuthData authData = dataAccess.createAuth(username);
         assertTrue(dataAccess.sessionExists(authData.authToken()));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -125,6 +174,14 @@ class dataAccessTest {
     {
         // throw a random authtoken in there and make sure it doesn't work
         assertFalse(dataAccess.sessionExists("ceci n'est pas un symbole d'autentification"));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -140,6 +197,14 @@ class dataAccessTest {
 
         // make sure it deletes just fine
         assertDoesNotThrow(() -> dataAccess.deleteSession(authData.authToken()));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -156,6 +221,14 @@ class dataAccessTest {
         // if you try to delete someone that doesn't exist, the existing person should still be there
         dataAccess.deleteSession("definitely super sus");
         assertTrue(dataAccess.sessionExists(authData.authToken()));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -167,6 +240,14 @@ class dataAccessTest {
 
         // make sure it still exists
         assertTrue(dataAccess.gameExists(gameName));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -175,6 +256,14 @@ class dataAccessTest {
         // make a game with a null name
         String gameName = null;
         assertNull(dataAccess.createGame(gameName));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -182,7 +271,14 @@ class dataAccessTest {
     {
         dataAccess.createGame("game");
         assertTrue(dataAccess.gameExists("game"));
-
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -196,13 +292,28 @@ class dataAccessTest {
     {
         GameData data = dataAccess.createGame("game");
         assertTrue(dataAccess.gameExists(data.gameID()));
-
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     void invalidGameDoesntExistsIntTest()
     {
         assertFalse(dataAccess.gameExists(237024352));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
 }
