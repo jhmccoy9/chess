@@ -149,7 +149,7 @@ public class MySqlDataAccess implements DataAccess{
 
     public AuthData createAuth(String username) {
         String authToken = UUID.randomUUID().toString();
-        String statement = "INSERT INTO authdata (username, authToken) VALUES (?,?)";
+        String statement = "INSERT INTO authData (username, authToken) VALUES (?,?)";
         try
         {
             executeUpdate(statement, username, authToken);
@@ -184,7 +184,7 @@ public class MySqlDataAccess implements DataAccess{
     }
 
     public void deleteSession(String authToken) {
-        String statement = "DELETE FROM authdata WHERE authToken=?";
+        String statement = "DELETE FROM authData WHERE authToken=?";
         try
         {
             executeUpdate(statement, authToken);
