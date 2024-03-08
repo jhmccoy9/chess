@@ -316,5 +316,34 @@ class dataAccessTest {
         }
     }
 
+    @Test
+    void getGoodGameTest()
+    {
+        GameData data = dataAccess.createGame("game");
+        assertEquals(data, dataAccess.getGame(data.gameID()));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getInvalidGameTest()
+    {
+        assertNull(dataAccess.getGame(237024352));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
