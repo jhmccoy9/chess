@@ -4,6 +4,7 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MySqlDataAccess;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -160,7 +161,48 @@ class dataAccessTest {
     @Test
     void validGameCreationTest()
     {
+        // make a game
+        String gameName = "march madness but it's chess for nerds";
+        GameData gameData = dataAccess.createGame(gameName);
 
+        // make sure it still exists
+        assertTrue(dataAccess.gameExists(gameName));
+    }
+
+    @Test
+    void invalidGameCreationTest()
+    {
+        // make a game with a null name
+        String gameName = null;
+        assertNull(dataAccess.createGame(gameName));
+    }
+
+    @Test
+    void validGameExistsStringTest()
+    {
+        dataAccess.createGame("game");
+        assertTrue(dataAccess.gameExists("game"));
+
+    }
+
+    @Test
+    void invalidGameDoesntExistsStringTest()
+    {
+        assertFalse(dataAccess.gameExists("game"));
+    }
+
+    @Test
+    void validGameExistsIntTest()
+    {
+        GameData data = dataAccess.createGame("game");
+        assertTrue(dataAccess.gameExists(data.gameID()));
+
+    }
+
+    @Test
+    void invalidGameDoesntExistsIntTest()
+    {
+        assertFalse(dataAccess.gameExists(237024352));
     }
 
 }
