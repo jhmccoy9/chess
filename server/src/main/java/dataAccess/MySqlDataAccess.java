@@ -324,6 +324,8 @@ public class MySqlDataAccess implements DataAccess{
 
     public void addPlayerToGame(int gameId, String authToken, boolean isWhite) {
         String username = this.getUsername(authToken);
+        if (authToken == null)
+            throw new RuntimeException();
         String whiteStatement = """
                         UPDATE games
                         SET whiteUsername =?

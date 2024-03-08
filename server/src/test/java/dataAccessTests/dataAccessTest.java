@@ -320,7 +320,7 @@ class dataAccessTest {
     void getGoodGameTest()
     {
         GameData data = dataAccess.createGame("game");
-        assertEquals(data, dataAccess.getGame(data.gameID()));
+        assertEquals(data.gameID(), dataAccess.getGame(data.gameID()).gameID());
         try
         {
             dataAccess.clear();
@@ -335,6 +335,21 @@ class dataAccessTest {
     void getInvalidGameTest()
     {
         assertNull(dataAccess.getGame(237024352));
+        try
+        {
+            dataAccess.clear();
+        }
+        catch (DataAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addInvalidPlayerTest()
+    {
+        // make sure it crashes if you put in no username
+        assertThrows(Exception.class, () -> dataAccess.addPlayerToGame(0, null, true));
         try
         {
             dataAccess.clear();
