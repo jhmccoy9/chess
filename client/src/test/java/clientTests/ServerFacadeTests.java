@@ -26,6 +26,7 @@ public class ServerFacadeTests {
     }
 
 
+    // make a user and make sure the username returns right
     @Test
     public void registerValidUserTest()
     {
@@ -42,5 +43,24 @@ public class ServerFacadeTests {
         {
         Assertions.assertTrue(false);
         }
+    }
+
+    // make a user, and then watch it fail when you try to run that user again
+    @Test
+    public void registerInvalidDuplicateUserTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+        Assertions.assertThrows(Exception.class, () -> serverFacade.registerUser(user));
     }
 }
