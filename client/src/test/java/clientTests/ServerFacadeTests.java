@@ -63,4 +63,14 @@ public class ServerFacadeTests {
         }
         Assertions.assertThrows(Exception.class, () -> serverFacade.registerUser(user));
     }
+
+    // make sure clearing throws no exceptions
+    @Test
+    public void clearTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        Assertions.assertDoesNotThrow(serverFacade::clear);
+    }
+
+
 }
