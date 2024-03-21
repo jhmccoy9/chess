@@ -6,6 +6,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 
 import java.io.IOException;
@@ -46,7 +47,12 @@ public class ServerFacade {
         return this.makeRequest("DELETE", path, null, null);
     }
 
-    public void joinGame() {}
+    public Object joinGame(int GameID, String color, String authToken) throws ResponseException
+    {
+        var path = "/game";
+        JoinGameData request = new JoinGameData(color, GameID);
+        return this.makeRequestAuthToken("PUT", path, request, Object.class, authToken);
+    }
 
     public Collection<ChessGame> listGames(String authToken) throws ResponseException
     {

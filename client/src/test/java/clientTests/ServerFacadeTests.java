@@ -2,6 +2,7 @@ package clientTests;
 
 import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -234,6 +235,49 @@ public class ServerFacadeTests {
             Assertions.assertTrue(false);
         }
     }
+
+    @Test
+    public void joinValidGameTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        String gameName = "jouer aux echecs";
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            GameData game = serverFacade.createGame(gameName, authData.authToken());
+            Assertions.assertDoesNotThrow(() -> serverFacade.joinGame(game.gameID(),"WHITE", authData.authToken()));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void joinInvalidGameTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        String gameName = "jouer aux echecs";
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            GameData game = serverFacade.createGame(gameName, authData.authToken());
+
+            // give it a color that doesn't exist
+            Assertions.assertThrows(Exception.class, () -> serverFacade.joinGame(game.gameID(),"AQUAMARINE", authData.authToken()));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
 
 
 
