@@ -46,7 +46,11 @@ public class ServerFacade {
 
     public void createGame() {}
 
-    public void logoutUser() {}
+    public void logoutUser(String authToken) throws ResponseException
+    {
+        var path = "/session";
+        this.makeRequestAuthToken("DELETE", path, null, null, authToken);
+    }
 
 
 
@@ -63,6 +67,24 @@ public class ServerFacade {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod(method);
+            http.setDoOutput(true);
+
+            writeBody(request, http);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, responseClass);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    private <T> T makeRequestAuthToken(String method, String path, Object request, Class<T> responseClass, String authToken)
+            throws ResponseException {
+        try {
+            URL url = (new URI(serverUrl + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.addRequestProperty("Authorization", authToken);
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
@@ -105,6 +127,7 @@ public class ServerFacade {
         }
         return response;
     }
+
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
