@@ -2,6 +2,7 @@ package server;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -14,6 +15,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class ServerFacade {
 
@@ -44,7 +48,18 @@ public class ServerFacade {
 
     public void joinGame() {}
 
-    public void listGames() {}
+    public Collection<ChessGame> listGames(String authToken) throws ResponseException
+    {
+        var path = "/game";
+        var response = this.makeRequestAuthToken("GET", path, null, Object.class, authToken);
+        if (response.getClass().equals(LinkedTreeMap.class)) {
+            LinkedTreeMap<String, ChessGame> map = (LinkedTreeMap<String, ChessGame>) (response);
+            Collection<ChessGame> list = (Collection<ChessGame>) map.get("games");
+            Collection<ChessGame> toReturn = new ArrayList<>();
+            return toReturn;
+        }
+        throw new ResponseException(500, "Invalid List");
+    }
 
     public GameData createGame(String gameName, String authToken) throws ResponseException {
         var path = "/game";
@@ -97,8 +112,6 @@ public class ServerFacade {
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
-
-            int i = 0;
             return readBody(http, responseClass);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -129,10 +142,6 @@ public class ServerFacade {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
-                    if (responseClass.equals(String.class))
-                    {
-                        int i = 0;
-                    }
                     response = new Gson().fromJson(reader, responseClass);
                 }
             }

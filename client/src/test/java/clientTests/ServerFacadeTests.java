@@ -1,10 +1,13 @@
 package clientTests;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
+
+import java.util.Collection;
 
 
 public class ServerFacadeTests {
@@ -187,6 +190,51 @@ public class ServerFacadeTests {
             Assertions.assertTrue(false);
         }
     }
+
+    @Test
+    public void listValidGamesTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            serverFacade.createGame("jouer aux echecs", authData.authToken());
+            serverFacade.createGame("win win win win win", authData.authToken());
+            serverFacade.createGame("veni vidi vici", authData.authToken());
+            Assertions.assertDoesNotThrow(() -> serverFacade.listGames(authData.authToken()));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void listInvalidGamesTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            serverFacade.createGame("jouer aux echecs", authData.authToken());
+            serverFacade.createGame("win win win win win", authData.authToken());
+            serverFacade.createGame("veni vidi vici", authData.authToken());
+
+            // throw in a bad authtoken
+            Assertions.assertThrows(Exception.class, () -> serverFacade.listGames("bad authtoken"));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
 
 
 }
