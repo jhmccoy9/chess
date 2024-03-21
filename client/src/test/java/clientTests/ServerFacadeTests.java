@@ -148,4 +148,45 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void createValidGameTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        String gameName = "jouer aux echecs";
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            Assertions.assertDoesNotThrow(() -> serverFacade.createGame(gameName, authData.authToken()));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void createInvalidGameTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+
+        // puts in null as the name. That's surely bound to break something...
+        String gameName = null;
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            Assertions.assertThrows(Exception.class, () -> serverFacade.createGame(gameName, authData.authToken()));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
+
 }
