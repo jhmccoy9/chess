@@ -113,4 +113,39 @@ public class ServerFacadeTests {
     }
 
 
+    @Test
+    public void logoutValidUserTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+            Assertions.assertDoesNotThrow(() -> serverFacade.logoutUser(authData.authToken()));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void logoutInvalidUserTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            Assertions.assertThrows(Exception.class, () -> serverFacade.logoutUser("this is not a real authtoken"));
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
 }
