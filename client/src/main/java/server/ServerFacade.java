@@ -1,8 +1,10 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.io.IOException;
@@ -44,7 +46,11 @@ public class ServerFacade {
 
     public void listGames() {}
 
-    public void createGame() {}
+    public GameData createGame(String gameName, String authToken) throws ResponseException {
+        var path = "/game";
+        GameData gameData = new GameData(0, "", "", gameName, new ChessGame());
+        return this.makeRequestAuthToken("POST", path, gameData, GameData.class, authToken);
+    }
 
     public void logoutUser(String authToken) throws ResponseException
     {
@@ -84,13 +90,15 @@ public class ServerFacade {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.addRequestProperty("Authorization", authToken);
+            http.addRequestProperty("authorization", authToken);
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
+
+            int i = 0;
             return readBody(http, responseClass);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -121,6 +129,10 @@ public class ServerFacade {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
+                    if (responseClass.equals(String.class))
+                    {
+                        int i = 0;
+                    }
                     response = new Gson().fromJson(reader, responseClass);
                 }
             }
