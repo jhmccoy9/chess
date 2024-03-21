@@ -72,5 +72,45 @@ public class ServerFacadeTests {
         Assertions.assertDoesNotThrow(serverFacade::clear);
     }
 
+    @Test
+    public void loginValidUserTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            serverFacade.registerUser(user);
+
+            // after you've made the user, make sure you can log them in
+            authData = serverFacade.loginUser(user);
+            Assertions.assertEquals(authData.username(), user.username());
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+    }
+
+    @Test
+    public void loginBadPasswordTest()
+    {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData;
+        try
+        {
+            serverFacade.clear();
+            authData = serverFacade.registerUser(user);
+        }
+        catch (Exception e)
+        {
+            Assertions.assertTrue(false);
+        }
+        Assertions.assertThrows(Exception.class,
+                () -> serverFacade.loginUser(new UserData("username", "wrong pasword", "email")));
+    }
+
 
 }
