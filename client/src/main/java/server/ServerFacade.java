@@ -40,6 +40,16 @@ public class ServerFacade {
         return this.makeRequest("DELETE", path, null, null);
     }
 
+    public void joinGame() {}
+
+    public void listGames() {}
+
+    public void createGame() {}
+
+    public void logoutUser() {}
+
+
+
 
 //    public Pet[] listPets() throws ResponseException {
 //        var path = "/pet";
