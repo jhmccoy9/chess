@@ -206,6 +206,10 @@ public class ServerFacadeTests {
             serverFacade.createGame("win win win win win", authData.authToken());
             serverFacade.createGame("veni vidi vici", authData.authToken());
             Assertions.assertDoesNotThrow(() -> serverFacade.listGames(authData.authToken()));
+
+            Collection<GameData> test = serverFacade.listGames(authData.authToken());
+
+            int i = 0;
         }
         catch (Exception e)
         {
