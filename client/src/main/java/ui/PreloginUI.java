@@ -35,8 +35,6 @@ public class PreloginUI
     {
         System.out.println("Welcome to Prelogin. Type 'help' to get started");
 
-        StringBuilder currentState;
-
         Set<String> validOptions = new HashSet<String>();
         validOptions.add("help");
         validOptions.add("welcome");
@@ -50,7 +48,6 @@ public class PreloginUI
         {
             String nextState = Utilities.getInput(validOptions);
 
-            // transitions
             switch (nextState)
             {
                 case "help":
@@ -102,6 +99,9 @@ public class PreloginUI
         }
 
         System.out.println("Excellent. Logging you in...");
+        PostloginUI postloginUI = new PostloginUI(server, authData);
+        postloginUI.run();
+
 
     }
 
@@ -127,6 +127,8 @@ public class PreloginUI
         }
 
         System.out.println("Excellent. Logging you in...");
+        PostloginUI postloginUI = new PostloginUI(server, authData);
+        postloginUI.run();
 
     }
 
