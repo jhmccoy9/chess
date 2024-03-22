@@ -3,6 +3,7 @@ package ui;
 
 import chess.ChessGame;
 import exception.ResponseException;
+import jdk.jshell.execution.Util;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -14,9 +15,9 @@ public class PostloginUI
 {
     private final ServerFacade server;
     private final AuthData authData;
-
+    private GameplayUI gameplayUI;
     // the first integer is the gameid from the user perspective, second is the gameid from the db perspective
-    private Map<Integer, Integer> gameIDs = null;
+    private Map<String, Integer> gameIDs = null;
 
     public PostloginUI(ServerFacade server, AuthData authData)
     {
@@ -78,6 +79,7 @@ public class PostloginUI
                     break;
 
                 case "join":
+                    this.joinGame();
                     break;
 
                 case "observe":
@@ -123,7 +125,7 @@ public class PostloginUI
             return;
         }
 
-        Map<Integer, Integer> tempIDs = new HashMap<>();
+        Map<String, Integer> tempIDs = new HashMap<>();
 
         System.out.println("Available games:");
         int i = 1;
@@ -134,13 +136,46 @@ public class PostloginUI
             System.out.printf("%d Name: %s, White: %s, Black: %s\n", i, game.gameName(), whiteUsername, blackUsername);
 
             // update the IDs as you go. first id is the id for the client, second id is the id for the server
-            tempIDs.put(i, game.gameID());
+            tempIDs.put(String.valueOf(i), game.gameID());
 
             i++;
         }
 
         // update the global variable once you're done
         this.gameIDs = tempIDs;
+    }
+
+    private void joinGame()
+    {
+        if (this.gameIDs == null)
+        {
+            System.out.println("Error: list the games first");
+            return;
+        }
+
+        System.out.println("Enter the number of the game you want to join.");
+        String clientGameID = Utilities.getInput(this.gameIDs.keySet());
+        int serverGameID = this.gameIDs.get(clientGameID);
+
+        System.out.println("Enter the color you want to be (w/b).");
+        Set<String> colorOptions = new HashSet<>();
+        colorOptions.add("b");
+        colorOptions.add("w");
+        String colorCode = Utilities.getInput(colorOptions);
+        String color = colorCode.equals("w") ? "WHITE" : "BLACK";
+
+        try
+        {
+            server.joinGame(serverGameID, color, this.authData.authToken());
+            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID);
+            gameplayUI.run();
+        }
+        catch (ResponseException e)
+        {
+            System.out.println("Error joining the game");
+        }
+        return;
+
     }
 
 }
