@@ -1,5 +1,10 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
+
 import java.util.Collection;
 import java.util.Scanner;
 
@@ -10,6 +15,7 @@ public class Utilities
 {
     public static String getInput(Collection<String> validEntries)
     {
+        System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
         System.out.printf(">>> ");
         Scanner scanner = new Scanner(System.in);
         StringBuilder entry = new StringBuilder(scanner.nextLine());
@@ -31,6 +37,104 @@ public class Utilities
             entry = new StringBuilder(scanner.nextLine());
         }
         return entry.toString();
+    }
+
+    public static void printChessBoard(ChessBoard board)
+    {
+        System.out.printf(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+        System.out.printf("    h  g  f  e  d  c  b  a    \n");
+        boolean colorAlternator = true;
+        // iterate over the entire board, with certain modifications
+        for (int row = 1; row < 9; row++)
+        {
+            for (int col = 0; col < 10; col++)
+            {
+                if (col == 0 || col == 9)
+                {
+                    System.out.printf(EscapeSequences.SET_TEXT_COLOR_BLACK);
+                    System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+                    System.out.printf(" %d ", row);
+                }
+                else
+                {
+                    ChessPiece piece = board.getPiece(new ChessPosition(row, col ));
+                    if (piece == null)
+                    {
+                        String backgroundColorCode = colorAlternator ?
+                        EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                        colorAlternator = !colorAlternator;
+                        System.out.printf(backgroundColorCode);
+                        System.out.printf("   ");
+                    }
+                    else {
+                        String textColorCode = piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
+                                EscapeSequences.SET_TEXT_COLOR_WHITE : EscapeSequences.SET_TEXT_COLOR_BLACK;
+                        String backgroundColorCode = colorAlternator ?
+                                EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                        colorAlternator = !colorAlternator;
+                        System.out.printf(textColorCode);
+                        System.out.printf(backgroundColorCode);
+                        System.out.printf(" %s ", piece.toString());
+                    }
+                }
+            }
+            colorAlternator = !colorAlternator;
+            System.out.printf("\n");
+        }
+        System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+        System.out.printf(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.printf("    h  g  f  e  d  c  b  a    \n");
+
+        System.out.println(" ");
+        System.out.printf(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+        System.out.printf("    a  b  c  d  e  f  g  h    \n");
+        colorAlternator = true;
+        for (int row = 8; row > 0; row--)
+        {
+            for (int col = 9; col >= 0; col--)
+            {
+                if (col == 0 || col == 9)
+                {
+                    System.out.printf(EscapeSequences.SET_TEXT_COLOR_BLACK);
+                    System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+                    System.out.printf(" %d ", row);
+                }
+                else
+                {
+                    ChessPiece piece = board.getPiece(new ChessPosition(row, col ));
+                    if (piece == null)
+                    {
+                        String backgroundColorCode = colorAlternator ?
+                                EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                        colorAlternator = !colorAlternator;
+                        System.out.printf(backgroundColorCode);
+                        System.out.printf("   ");
+                    }
+                    else {
+                        String textColorCode = piece.getTeamColor() == ChessGame.TeamColor.WHITE ?
+                                EscapeSequences.SET_TEXT_COLOR_WHITE : EscapeSequences.SET_TEXT_COLOR_BLACK;
+                        String backgroundColorCode = colorAlternator ?
+                                EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                        colorAlternator = !colorAlternator;
+                        System.out.printf(textColorCode);
+                        System.out.printf(backgroundColorCode);
+                        System.out.printf(" %s ", piece.toString());
+                    }
+                }
+            }
+            colorAlternator = !colorAlternator;
+            System.out.printf("\n");
+        }
+        System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+        System.out.printf(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.printf("    a  b  c  d  e  f  g  h    \n");
+        System.out.printf(EscapeSequences.SET_BG_COLOR_WHITE);
+
+
+
+        return;
     }
 
 
