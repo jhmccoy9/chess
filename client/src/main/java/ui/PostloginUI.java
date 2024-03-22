@@ -83,6 +83,7 @@ public class PostloginUI
                     break;
 
                 case "observe":
+                    this.observeGame();
                     break;
 
                 default:
@@ -173,6 +174,33 @@ public class PostloginUI
         catch (ResponseException e)
         {
             System.out.println("Error joining the game");
+        }
+        return;
+
+    }
+
+    private void observeGame()
+    {
+        if (this.gameIDs == null)
+        {
+            System.out.println("Error: list the games first");
+            return;
+        }
+
+        System.out.println("Enter the number of the game you want to join.");
+        String clientGameID = Utilities.getInput(this.gameIDs.keySet());
+        int serverGameID = this.gameIDs.get(clientGameID);
+
+
+        try
+        {
+            server.joinGame(serverGameID, null, this.authData.authToken());
+            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID);
+            gameplayUI.run();
+        }
+        catch (ResponseException e)
+        {
+            System.out.println("Error observing the game");
         }
         return;
 
