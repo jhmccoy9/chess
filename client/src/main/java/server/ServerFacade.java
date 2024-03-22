@@ -9,15 +9,14 @@ import model.GameData;
 import model.JoinGameData;
 import model.UserData;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ServerFacade {
@@ -54,18 +53,44 @@ public class ServerFacade {
         return this.makeRequestAuthToken("PUT", path, request, Object.class, authToken);
     }
 
-    public Collection<ChessGame> listGames(String authToken) throws ResponseException
+//    public Collection<ChessGame> listGames(String authToken) throws ResponseException
+    public Collection<GameData> listGames(String authToken) throws ResponseException
     {
+        record listGamesResponse(GameData[] game) {};
+
         var path = "/game";
-        var response = this.makeRequestAuthToken("GET", path, null, Object.class, authToken);
-        if (response.getClass().equals(LinkedTreeMap.class)) {
-            LinkedTreeMap<String, ChessGame> map = (LinkedTreeMap<String, ChessGame>) (response);
-            Collection<ChessGame> list = (Collection<ChessGame>) map.get("games");
-            Collection<ChessGame> toReturn = new ArrayList<>();
-            return toReturn;
-        }
-        throw new ResponseException(500, "Invalid List");
+        var response = this.makeRequestListGames("GET", path, null, authToken);
+
+        Collection<GameData> toReturn = new ArrayList<GameData>(Arrays.asList(response));
+
+//        var response = this.makeRequestAuthToken("GET", path, null, Object.class, authToken);
+//        int j = 0;
+//
+//        LinkedTreeMap<String, ArrayList> map = (LinkedTreeMap<String, ArrayList>) (response);
+//        ArrayList<LinkedTreeMap<String, Object>> gamesList = (ArrayList<LinkedTreeMap<String, Object>>) map.get("games");
+//
+//        Collection<GameData> toReturn = new ArrayList<>();
+//
+//        // big ugly thing to convert linkedtree map to collection
+//        for (LinkedTreeMap<String, Object> game : gamesList)
+//        {
+//            int gameID = ((Double) game.get("gameID")).intValue();
+//            String gameName = (String) game.get("gameName");
+//            LinkedTreeMap<String, Object> gameMap = (LinkedTreeMap<String, Object>) game.get("game");
+//            int i = 0;
+//        }
+
+        return toReturn;
+//        throw new ResponseException(500, "Invalid List");
     }
+
+    //    public Pet[] listPets() throws ResponseException {
+//        var path = "/pet";
+//        record listPetResponse(Pet[] pet) {
+//        }
+//        var response = this.makeRequest("GET", path, null, listPetResponse.class);
+//        return response.pet();
+//    }
 
     public GameData createGame(String gameName, String authToken) throws ResponseException {
         var path = "/game";
@@ -82,13 +107,7 @@ public class ServerFacade {
 
 
 
-//    public Pet[] listPets() throws ResponseException {
-//        var path = "/pet";
-//        record listPetResponse(Pet[] pet) {
-//        }
-//        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-//        return response.pet();
-//    }
+
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
@@ -155,8 +174,41 @@ public class ServerFacade {
         return response;
     }
 
-
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
+
+    private GameData[] makeRequestListGames(String method, String path, Object request, String authToken)
+            throws ResponseException {
+        try {
+            URL url = (new URI(serverUrl + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.addRequestProperty("authorization", authToken);
+            http.setRequestMethod(method);
+            http.setDoOutput(true);
+
+            writeBody(request, http);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+
+    private static GameData[] readBody(HttpURLConnection http) throws IOException {
+        GameData[] response = null;
+        if (http.getContentLength() < 0) {
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader reader = new InputStreamReader(respBody);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String temp = bufferedReader.readLine();
+                String temp1 = temp.substring(9, temp.length() - 1);
+                response = new Gson().fromJson(temp1, GameData[].class);
+            }
+        }
+        return response;
+    }
+
 }
