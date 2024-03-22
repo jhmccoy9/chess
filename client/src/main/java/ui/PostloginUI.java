@@ -8,10 +8,7 @@ import model.GameData;
 import model.UserData;
 import server.ServerFacade;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PostloginUI
 {
@@ -19,7 +16,7 @@ public class PostloginUI
     private final AuthData authData;
 
     // the first integer is the gameid from the user perspective, second is the gameid from the db perspective
-    private Map<Integer, Integer> gameIDs;
+    private Map<Integer, Integer> gameIDs = null;
 
     public PostloginUI(ServerFacade server, AuthData authData)
     {
@@ -109,7 +106,7 @@ public class PostloginUI
             return;
         }
 
-        System.out.printf("Game created. Name: %s, ID: %d\n", gameData.gameName(), gameData.gameID());
+        System.out.printf("Game created. Name: %s\n", gameData.gameName());
     }
 
     private void listGames()
@@ -126,6 +123,8 @@ public class PostloginUI
             return;
         }
 
+        Map<Integer, Integer> tempIDs = new HashMap<>();
+
         System.out.println("Available games:");
         int i = 1;
         for (GameData game : games)
@@ -133,9 +132,15 @@ public class PostloginUI
             String whiteUsername = game.whiteUsername() == null ? "(None)" : game.whiteUsername();
             String blackUsername = game.blackUsername() == null ? "(None)" : game.blackUsername();
             System.out.printf("%d Name: %s, White: %s, Black: %s\n", i, game.gameName(), whiteUsername, blackUsername);
+
+            // update the IDs as you go. first id is the id for the client, second id is the id for the server
+            tempIDs.put(i, game.gameID());
+
             i++;
         }
 
+        // update the global variable once you're done
+        this.gameIDs = tempIDs;
     }
 
 }
