@@ -114,7 +114,7 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
+            http.setDoOutput(!method.equals("GET"));
 
             writeBody(request, http);
             http.connect();
