@@ -8,6 +8,8 @@ import spark.*;
 import com.google.gson.Gson;
 import service.*;
 import model.*;
+
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -95,8 +97,8 @@ public class Server {
         String authToken = req.headers("authorization");
         try  // return a list of games if successful
         {
-            var games = gameService.listGames(authToken).toArray();
-            return new Gson().toJson(Map.of("games", games));
+            Collection<GameData> games = gameService.listGames(authToken);
+            return new Gson().toJson(Map.of("games", games.toArray()));
         }
         catch (DataAccessException e)
         {
