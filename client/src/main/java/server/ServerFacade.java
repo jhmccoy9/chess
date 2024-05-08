@@ -53,7 +53,6 @@ public class ServerFacade {
         return this.makeRequestAuthToken("PUT", path, request, Object.class, authToken);
     }
 
-//    public Collection<ChessGame> listGames(String authToken) throws ResponseException
     public Collection<GameData> listGames(String authToken) throws ResponseException
     {
         record listGamesResponse(GameData[] game) {};
@@ -62,35 +61,9 @@ public class ServerFacade {
         var response = this.makeRequestListGames("GET", path, null, authToken);
 
         Collection<GameData> toReturn = new ArrayList<GameData>(Arrays.asList(response));
-
-//        var response = this.makeRequestAuthToken("GET", path, null, Object.class, authToken);
-//        int j = 0;
-//
-//        LinkedTreeMap<String, ArrayList> map = (LinkedTreeMap<String, ArrayList>) (response);
-//        ArrayList<LinkedTreeMap<String, Object>> gamesList = (ArrayList<LinkedTreeMap<String, Object>>) map.get("games");
-//
-//        Collection<GameData> toReturn = new ArrayList<>();
-//
-//        // big ugly thing to convert linkedtree map to collection
-//        for (LinkedTreeMap<String, Object> game : gamesList)
-//        {
-//            int gameID = ((Double) game.get("gameID")).intValue();
-//            String gameName = (String) game.get("gameName");
-//            LinkedTreeMap<String, Object> gameMap = (LinkedTreeMap<String, Object>) game.get("game");
-//            int i = 0;
-//        }
-
         return toReturn;
-//        throw new ResponseException(500, "Invalid List");
     }
 
-    //    public Pet[] listPets() throws ResponseException {
-//        var path = "/pet";
-//        record listPetResponse(Pet[] pet) {
-//        }
-//        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-//        return response.pet();
-//    }
 
     public GameData createGame(String gameName, String authToken) throws ResponseException {
         var path = "/game";

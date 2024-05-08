@@ -29,8 +29,6 @@ public class PostloginUI
     {
         System.out.println("You are logged in. Type 'help' to get started");
 
-        StringBuilder currentState;
-
         Set<String> validOptions = new HashSet<String>();
         validOptions.add("help");
         validOptions.add("join");
