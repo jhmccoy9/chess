@@ -4,6 +4,7 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
 import dataAccess.MySqlDataAccess;
+import server.websocket.WebSocketHandler;
 import spark.*;
 import com.google.gson.Gson;
 import service.*;
@@ -17,10 +18,12 @@ public class Server {
     private ClearService clearService;
     private UserService userService;
     private GameService gameService;
+    private WebSocketHandler webSocketHandler;
 
     public Server()
     {
         DataAccess dataAccess;
+        webSocketHandler = new WebSocketHandler();
         try
         {
             dataAccess = new MySqlDataAccess();
@@ -51,6 +54,7 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.get("/game", this::listGames);
         Spark.put("/game", this::joinGame);
+        Spark.webSocket("/connect", webSocketHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
