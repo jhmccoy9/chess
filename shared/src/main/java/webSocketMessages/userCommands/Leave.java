@@ -1,4 +1,4 @@
-package websocket.commands;
+package webSocketMessages.userCommands;
 
 import chess.ChessMove;
 
