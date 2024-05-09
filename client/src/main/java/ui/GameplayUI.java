@@ -201,5 +201,6 @@ public class GameplayUI
 
         // redraw the board, but with possible moves highlighted
         Utilities.printChessBoard(board, possiblePositions);
+        return;
     }
 }
