@@ -8,6 +8,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import server.ServerFacade;
+import websocket.*;
 
 import java.util.*;
 
@@ -16,12 +17,18 @@ public class GameplayUI
     private final ServerFacade server;
     private final AuthData authData;
     private int gameID;
+    private final String serverUrl;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
 
-    public GameplayUI(ServerFacade server, AuthData authData, int serverGameID)
+
+    public GameplayUI(ServerFacade server, AuthData authData, int serverGameID, String serverURL)
     {
         this.server = server;
         this.authData = authData;
         this.gameID = serverGameID;
+        this.serverUrl = serverURL;
+        this.notificationHandler = new NotificationHandler(); // The gameplay UI itself will probably be the notification handler
     }
 
 

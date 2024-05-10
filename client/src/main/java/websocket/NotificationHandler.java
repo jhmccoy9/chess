@@ -2,6 +2,9 @@ package websocket;
 
 import webSocketMessages.serverMessages.*;
 
-public interface NotificationHandler {
-    void notify(Notification notification);
+public class NotificationHandler {
+    void notify(Notification notification)
+    {
+        System.out.println((notification.toString()));
+    }
 }

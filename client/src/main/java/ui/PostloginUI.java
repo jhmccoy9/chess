@@ -1,12 +1,9 @@
 package ui;
 
 
-import chess.ChessGame;
 import exception.ResponseException;
-import jdk.jshell.execution.Util;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import server.ServerFacade;
 
 import java.util.*;
@@ -18,10 +15,13 @@ public class PostloginUI
     private GameplayUI gameplayUI;
     // the first integer is the gameid from the user perspective, second is the gameid from the db perspective
     private Map<String, Integer> gameIDs = null;
+    private final String serverURL;
 
-    public PostloginUI(ServerFacade server, AuthData authData)
+    public PostloginUI(ServerFacade server, AuthData authData, String serverURL)
     {
-        this.server = server; this.authData = authData;
+        this.server = server;
+        this.authData = authData;
+        this.serverURL = serverURL;
     }
 
 
@@ -166,7 +166,7 @@ public class PostloginUI
         try
         {
             server.joinGame(serverGameID, color, this.authData.authToken());
-            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID);
+            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID, this.serverURL);
             gameplayUI.run();
         }
         catch (ResponseException e)
@@ -193,7 +193,7 @@ public class PostloginUI
         try
         {
             server.joinGame(serverGameID, null, this.authData.authToken());
-            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID);
+            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID, this.serverURL);
             gameplayUI.run();
         }
         catch (ResponseException e)

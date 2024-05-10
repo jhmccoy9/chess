@@ -5,15 +5,14 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import server.ServerFacade;
-import ui.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 public class PreloginUI
 {
     private final ServerFacade server;
+    private final String serverURL;
 
     private enum State
     {
@@ -25,9 +24,10 @@ public class PreloginUI
     }
 
 
-    public PreloginUI(ServerFacade server)
+    public PreloginUI(ServerFacade server, String serverURL)
     {
         this.server = server;
+        this.serverURL = serverURL;
     }
 
 
@@ -89,7 +89,7 @@ public class PreloginUI
         AuthData authData;
         try
         {
-            authData = server.registerUser(userData);
+            authData = this.server.registerUser(userData);
         }
         catch (ResponseException e)
         {
@@ -99,7 +99,7 @@ public class PreloginUI
         }
 
         System.out.println("Excellent. Logging you in...");
-        PostloginUI postloginUI = new PostloginUI(server, authData);
+        PostloginUI postloginUI = new PostloginUI(this.server, authData, this.serverURL);
         postloginUI.run();
 
 
@@ -127,7 +127,7 @@ public class PreloginUI
         }
 
         System.out.println("Excellent. Logging you in...");
-        PostloginUI postloginUI = new PostloginUI(server, authData);
+        PostloginUI postloginUI = new PostloginUI(server, authData, this.serverURL);
         postloginUI.run();
 
     }
