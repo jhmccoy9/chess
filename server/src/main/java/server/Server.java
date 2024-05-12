@@ -23,7 +23,6 @@ public class Server {
     public Server()
     {
         DataAccess dataAccess;
-        webSocketHandler = new WebSocketHandler();
         try
         {
             dataAccess = new MySqlDataAccess();
@@ -38,6 +37,9 @@ public class Server {
             userService = new UserService(dataAccess);
             gameService = new GameService(dataAccess);
         }
+        // make the websocket handler, and give it access to all the data
+        webSocketHandler = new WebSocketHandler(dataAccess);
+
 
     }
 

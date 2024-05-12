@@ -16,12 +16,14 @@ public class PostloginUI
     // the first integer is the gameid from the user perspective, second is the gameid from the db perspective
     private Map<String, Integer> gameIDs = null;
     private final String serverURL;
+    private final String username;
 
-    public PostloginUI(ServerFacade server, AuthData authData, String serverURL)
+    public PostloginUI(ServerFacade server, AuthData authData, String serverURL, String username)
     {
         this.server = server;
         this.authData = authData;
         this.serverURL = serverURL;
+        this.username = username;
     }
 
 
@@ -29,7 +31,7 @@ public class PostloginUI
     {
         System.out.println("You are logged in. Type 'help' to get started");
 
-        Set<String> validOptions = new HashSet<String>();
+        Set<String> validOptions = new HashSet<>();
         validOptions.add("help");
         validOptions.add("join");
         validOptions.add("observe");
@@ -166,15 +168,13 @@ public class PostloginUI
         try
         {
             server.joinGame(serverGameID, color, this.authData.authToken());
-            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID, this.serverURL);
+            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID, this.serverURL, this.username);
             gameplayUI.run();
         }
         catch (ResponseException e)
         {
             System.out.println("Error joining the game");
         }
-        return;
-
     }
 
     private void observeGame()
@@ -193,15 +193,13 @@ public class PostloginUI
         try
         {
             server.joinGame(serverGameID, null, this.authData.authToken());
-            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID, this.serverURL);
+            gameplayUI = new GameplayUI(this.server, this.authData, serverGameID, this.serverURL, this.username);
             gameplayUI.run();
         }
         catch (ResponseException e)
         {
             System.out.println("Error observing the game");
         }
-        return;
-
     }
 
 }

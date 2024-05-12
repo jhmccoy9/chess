@@ -99,7 +99,7 @@ public class PreloginUI
         }
 
         System.out.println("Excellent. Logging you in...");
-        PostloginUI postloginUI = new PostloginUI(this.server, authData, this.serverURL);
+        PostloginUI postloginUI = new PostloginUI(this.server, authData, this.serverURL, username);
         postloginUI.run();
 
 
@@ -127,7 +127,7 @@ public class PreloginUI
         }
 
         System.out.println("Excellent. Logging you in...");
-        PostloginUI postloginUI = new PostloginUI(server, authData, this.serverURL);
+        PostloginUI postloginUI = new PostloginUI(server, authData, this.serverURL, username);
         postloginUI.run();
 
     }

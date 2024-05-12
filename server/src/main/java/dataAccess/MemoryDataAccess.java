@@ -83,17 +83,19 @@ public class MemoryDataAccess implements DataAccess
             this.authData.remove(session);
     }
 
-    public GameData createGame(String gameName)
+    public GameData createGame(String gameName, ChessGame game)
     {
         // get the id. For us, it will be one more than the max of the game ids
         int gameId = 1;
-        for (GameData game : this.games)
+        for (GameData i : this.games)
         {
-            if (game.gameID() >= gameId)
-                gameId = game.gameID() + 1;
+            if (i.gameID() >= gameId)
+                gameId = i.gameID() + 1;
         }
         // just autofill it with blank player names as null for the time being...
-        GameData newGame = new GameData(gameId, null, null, gameName, new ChessGame());
+        if (game == null)
+            game = new ChessGame();
+        GameData newGame = new GameData(gameId, null, null, gameName, game);
         this.games.add(newGame);
         return newGame;
     }

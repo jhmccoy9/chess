@@ -20,15 +20,18 @@ public class GameplayUI
     private final String serverUrl;
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
+    private String username;
 
 
-    public GameplayUI(ServerFacade server, AuthData authData, int serverGameID, String serverURL)
+    public GameplayUI(ServerFacade server, AuthData authData, int serverGameID, String serverURL, String username) throws ResponseException
     {
         this.server = server;
         this.authData = authData;
         this.gameID = serverGameID;
         this.serverUrl = serverURL;
+        this.username = username;
         this.notificationHandler = new NotificationHandler(); // The gameplay UI itself will probably be the notification handler
+        this.ws = new WebSocketFacade(this.serverUrl, this.notificationHandler);
     }
 
 
@@ -54,6 +57,29 @@ public class GameplayUI
             if (possibleGame.gameID() == this.gameID)
             {
                 game = possibleGame.game();
+
+                // get the right color
+                ChessGame.TeamColor color;
+                if (possibleGame.whiteUsername().equals(this.username))
+                    color = ChessGame.TeamColor.WHITE;
+                else if (possibleGame.blackUsername().equals(this.username))
+                    color = ChessGame.TeamColor.BLACK;
+                else
+                {
+                    System.out.println("Error: invalid color problem");
+                    return;
+                }
+
+                try
+                {
+                    ws.enterGame(this.authData.authToken(), this.gameID, color);
+                }
+                catch (ResponseException e)
+                {
+                    System.out.println("Error: unable to join game via websocket");
+                    return;
+                }
+
                 break;
             }
         }

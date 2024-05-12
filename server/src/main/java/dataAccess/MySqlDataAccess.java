@@ -199,20 +199,25 @@ public class MySqlDataAccess implements DataAccess{
         return;
     }
 
-    public GameData createGame(String gameName) {
+    public GameData createGame(String gameName, ChessGame game) {
         if (gameName == null)
         {
             System.out.println("you need to figure out what to do with this");
             return null;
         }
 
-        var statement = "INSERT INTO games (gameName, game) VALUES (?,?)";
-        ChessGame newGame = new ChessGame();
-        var gameJson = new Gson().toJson(newGame);
+        String statement;
+        if (game == null)
+            statement = "INSERT INTO games (gameName, game) VALUES (?,?)";
+        else
+            statement = "UPDATE games SET game = ? WHERE gameName = ?";
+
+        var gameJson = new Gson().toJson(game == null ? new ChessGame() : game);
+
         try
         {
             var id = executeUpdate(statement, gameName, gameJson);
-            return new GameData(id, null, null, gameName, newGame);
+            return new GameData(id, null, null, gameName, game);
         } catch (DataAccessException e) {System.out.println("you need to figure out what to do with this");
 
         }
@@ -368,4 +373,5 @@ public class MySqlDataAccess implements DataAccess{
         }
         return null;
     }
+
 }

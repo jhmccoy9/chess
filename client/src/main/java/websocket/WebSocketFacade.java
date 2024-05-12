@@ -3,6 +3,7 @@ package websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.*;
 import webSocketMessages.serverMessages.*;
 
@@ -29,10 +30,21 @@ public class WebSocketFacade extends Endpoint {
 
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                // TODO: you could tweak this to make it accept all kinds of messages--json files, even
+                // in reality, this should probably just be used for notifications. I bet there's a better
+                // way to handle actual messages/data being passed. Actually, I'm not sure I still agree with that
+
                 @Override
-                public void onMessage(String message) {
-                    Notification notification = new Gson().fromJson(message, Notification.class);
-                    notificationHandler.notify(notification);
+                public void onMessage(String jsonMessage) {
+                    System.out.println(jsonMessage);
+                    ServerMessage notification = new Gson().fromJson(jsonMessage, ServerMessage.class);
+                    switch (notification.getServerMessageType())
+                    {
+                        case NOTIFICATION -> notificationHandler.notify(new Gson().fromJson(jsonMessage, Notification.class));
+                        case ERROR -> notificationHandler.error(new Gson().fromJson(jsonMessage, Error.class));
+                        case LOAD_GAME -> notificationHandler.loadGame(new Gson().fromJson(jsonMessage, LoadGame.class));
+                        case null, default -> System.out.println("Error: unknown message type from server");
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
