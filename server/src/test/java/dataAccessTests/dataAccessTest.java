@@ -236,7 +236,7 @@ class dataAccessTest {
     {
         // make a game
         String gameName = "march madness but it's chess for nerds";
-        GameData gameData = dataAccess.createGame(gameName, null);
+        GameData gameData = dataAccess.createGame(gameName);
 
         // make sure it still exists
         assertTrue(dataAccess.gameExists(gameName));
@@ -255,7 +255,7 @@ class dataAccessTest {
     {
         // make a game with a null name
         String gameName = null;
-        assertNull(dataAccess.createGame(gameName, null));
+        assertNull(dataAccess.createGame(gameName));
         try
         {
             dataAccess.clear();
@@ -269,7 +269,7 @@ class dataAccessTest {
     @Test
     void validGameExistsStringTest()
     {
-        dataAccess.createGame("game", null);
+        dataAccess.createGame("game");
         assertTrue(dataAccess.gameExists("game"));
         try
         {
@@ -290,7 +290,7 @@ class dataAccessTest {
     @Test
     void validGameExistsIntTest()
     {
-        GameData data = dataAccess.createGame("game", null);
+        GameData data = dataAccess.createGame("game");
         assertTrue(dataAccess.gameExists(data.gameID()));
         try
         {
@@ -319,7 +319,7 @@ class dataAccessTest {
     @Test
     void getGoodGameTest()
     {
-        GameData data = dataAccess.createGame("game", null);
+        GameData data = dataAccess.createGame("game");
         assertEquals(data.gameID(), dataAccess.getGame(data.gameID()).gameID());
         try
         {
@@ -363,7 +363,7 @@ class dataAccessTest {
     @Test
     void addValidUserTest()
     {
-        GameData game = dataAccess.createGame("game", null);
+        GameData game = dataAccess.createGame("game");
         AuthData data = dataAccess.createAuth("person");
 
         assertDoesNotThrow(() -> dataAccess.addPlayerToGame(game.gameID(), data.authToken(), true));

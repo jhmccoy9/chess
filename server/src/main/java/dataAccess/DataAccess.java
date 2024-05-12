@@ -22,7 +22,7 @@ public interface DataAccess
 
     void deleteSession(String authToken);
 
-    GameData createGame(String gameName, ChessGame game);
+    GameData createGame(String gameName);
 
     boolean gameExists(String gameName);
 
@@ -35,4 +35,8 @@ public interface DataAccess
     void addPlayerToGame(int gameId, String authToken, boolean isWhite);
 
     String getUsername(String authToken);
+
+    void updateGame(int gameID, ChessGame game);
+
+    void removePlayer(int gameID, String username);
 }

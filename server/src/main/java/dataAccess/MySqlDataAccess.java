@@ -8,7 +8,6 @@ import model.UserData;
 import java.util.Collection;
 import com.google.gson.Gson;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.UUID;
@@ -199,25 +198,20 @@ public class MySqlDataAccess implements DataAccess{
         return;
     }
 
-    public GameData createGame(String gameName, ChessGame game) {
+    public GameData createGame(String gameName) {
         if (gameName == null)
         {
             System.out.println("you need to figure out what to do with this");
             return null;
         }
 
-        String statement;
-        if (game == null)
-            statement = "INSERT INTO games (gameName, game) VALUES (?,?)";
-        else
-            statement = "UPDATE games SET game = ? WHERE gameName = ?";
-
-        var gameJson = new Gson().toJson(game == null ? new ChessGame() : game);
-
+        var statement = "INSERT INTO games (gameName, game) VALUES (?,?)";
+        ChessGame newGame = new ChessGame();
+        var gameJson = new Gson().toJson(newGame);
         try
         {
             var id = executeUpdate(statement, gameName, gameJson);
-            return new GameData(id, null, null, gameName, game);
+            return new GameData(id, null, null, gameName, newGame);
         } catch (DataAccessException e) {System.out.println("you need to figure out what to do with this");
 
         }
@@ -372,6 +366,51 @@ public class MySqlDataAccess implements DataAccess{
             throw new RuntimeException();
         }
         return null;
+    }
+
+    @Override
+    public void updateGame(int gameID, ChessGame game)
+    {
+        if (game == null)
+            return;
+
+        String statement = "UPDATE games SET game = ? WHERE gameID = ?";
+
+        var gameJson = new Gson().toJson(game);
+
+        try
+        {
+            var id = executeUpdate(statement, gameJson, gameID);
+        } catch (DataAccessException e) {System.out.println("you need to figure out what to do with this");
+
+        }
+    }
+
+    @Override
+    public void removePlayer(int gameID, String username)
+    {
+        // first, get the game
+        GameData game = this.getGame(gameID);
+        String statement;
+        // then, if that username matches one of them, swap out the name for null or whatever
+        if (username.equals(game.whiteUsername()))
+        {
+            statement = "UPDATE games SET whiteUsername = NULL WHERE gameID = ?";
+
+        }
+        else if (username.equals(game.blackUsername()))
+        {
+            statement = "UPDATE games SET blackUsername = NULL WHERE gameID = ?";
+        }
+        else
+            return;
+
+        try
+        {
+            var id = executeUpdate(statement, gameID);
+        } catch (DataAccessException e) {System.out.println("you need to figure out what to do with this");
+
+        }
     }
 
 }

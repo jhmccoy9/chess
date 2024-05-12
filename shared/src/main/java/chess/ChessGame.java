@@ -16,12 +16,15 @@ public class ChessGame {
     private final Collection<ChessMove> moves;
     private ChessGame.TeamColor whoseTurn;
 
+    private boolean isOver;
+
     public ChessGame()
     {
         this.board = new ChessBoard();
         this.board.resetBoard();
         this.moves = new Stack<>();
         this.whoseTurn = TeamColor.WHITE;
+        this.isOver = false;
     }
 
     /**
@@ -185,7 +188,15 @@ public class ChessGame {
             throw new InvalidMoveException("Puts king in check");
         }
 
+        // see if the opposing team is now in checkmate or stalemate. If so, toggle the isOver boolean
+        if (isInCheckmate(this.whoseTurn) || isInStalemate(this.whoseTurn))
+            this.isOver = true;
+
     }
+
+    public boolean isOver() { return isOver; }
+
+    public void forceGameOver() { this.isOver = true; }
 
     /**
      * Determines if the given team is in check

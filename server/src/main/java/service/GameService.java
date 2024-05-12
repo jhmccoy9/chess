@@ -24,7 +24,7 @@ public class GameService {
         {
             // make a game with the name it doesn't exist
             if (!dataAccess.gameExists(gameName))
-                return dataAccess.createGame(gameName, null);
+                return dataAccess.createGame(gameName);
             else
                 throw new DataAccessException("Error: bad request");
         }

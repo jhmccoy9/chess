@@ -16,15 +16,14 @@ import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinObserver;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.MakeMove;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 //import webSocketMessages.*;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 @WebSocket
@@ -32,52 +31,42 @@ public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private final DataAccess dataAccess;
-    private final ClearService clearService;
-    private final UserService userService;
-    private final GameService gameService;
 
-    public WebSocketHandler(DataAccess dataAccess)
-    {
+
+    public WebSocketHandler(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
-        this.clearService = new ClearService(dataAccess);
-        this.userService = new UserService(dataAccess);
-        this.gameService = new GameService(dataAccess);
     }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         String username;
-        switch (command.getCommandType())
-        {
+        switch (command.getCommandType()) {
             case JOIN_PLAYER:
                 JoinPlayer joinCommand = new Gson().fromJson(message, JoinPlayer.class);
                 username = this.dataAccess.getUsername(joinCommand.getAuthToken());
                 // make sure they're accessing a game that actually exists
-                if (dataAccess.getGame(joinCommand.getGameID()) == null)
-                {
+                if (dataAccess.getGame(joinCommand.getGameID()) == null) {
                     Error error = new Error("This game doesn't exist you silly goose");
                     session.getRemote().sendString(new Gson().toJson(error));
                 }
                 // if they're trying to access an uninitialized player spot, send an error
                 else if ((joinCommand.getColor().equals(ChessGame.TeamColor.WHITE) &&
                         dataAccess.getGame((joinCommand.getGameID())).whiteUsername() == null) ||
-                (joinCommand.getColor().equals(ChessGame.TeamColor.BLACK) &&
-                        dataAccess.getGame((joinCommand.getGameID())).blackUsername() == null))
-                {
+                        (joinCommand.getColor().equals(ChessGame.TeamColor.BLACK) &&
+                                dataAccess.getGame((joinCommand.getGameID())).blackUsername() == null)) {
                     Error error = new Error("Nice try. Maybe go use the http endpoint you punk.");
                     session.getRemote().sendString(new Gson().toJson(error));
                 }
                 // if they're trying to log into a position that's already theirs, let them join
                 else if ((joinCommand.getColor().equals(ChessGame.TeamColor.WHITE) &&
-                    dataAccess.getGame((joinCommand.getGameID())).whiteUsername().equals(username)) ||
-                    (joinCommand.getColor().equals(ChessGame.TeamColor.BLACK) &&
-                    dataAccess.getGame((joinCommand.getGameID())).blackUsername().equals(username))
+                        dataAccess.getGame((joinCommand.getGameID())).whiteUsername().equals(username)) ||
+                        (joinCommand.getColor().equals(ChessGame.TeamColor.BLACK) &&
+                                dataAccess.getGame((joinCommand.getGameID())).blackUsername().equals(username))
                 )
                     playerJoin(joinCommand.getGameID(), username, session, joinCommand.getColor());
-                // otherwise, flag an error
-                else
-                {
+                    // otherwise, flag an error
+                else {
                     Error error = new Error("You are not allowed to join this game");
                     session.getRemote().sendString(new Gson().toJson(error));
                 }
@@ -86,16 +75,14 @@ public class WebSocketHandler {
                 JoinObserver observeCommand = new Gson().fromJson(message, JoinObserver.class);
                 username = this.dataAccess.getUsername(observeCommand.getAuthToken());
                 // make sure they're accessing a game that actually exists
-                if (dataAccess.getGame(observeCommand.getGameID()) == null)
-                {
+                if (dataAccess.getGame(observeCommand.getGameID()) == null) {
                     Error error = new Error("This game doesn't exist you silly goose");
                     session.getRemote().sendString(new Gson().toJson(error));
                 }
                 // if they're trying to observe and the authtoken is valid
                 else if (dataAccess.sessionExists(observeCommand.getAuthToken()))
                     observerJoin(observeCommand.getGameID(), username, session);
-                else
-                {
+                else {
                     Error error = new Error("You are not allowed to join this game");
                     session.getRemote().sendString(new Gson().toJson(error));
                 }
@@ -106,24 +93,120 @@ public class WebSocketHandler {
                 move(session, makeMove.getGameID(), makeMove.getMove(), makeMove.getAuthToken());
                 break;
 
+            case RESIGN:
+                Resign resign = new Gson().fromJson(message, Resign.class);
+                resign(session, resign.getGameID());
+                break;
+
+            case LEAVE:
+                Leave leave = new Gson().fromJson(message, Leave.class);
+                leave(session, leave.getGameID());
+                break;
+
             default:
                 System.out.println("Error: unknown action");
         }
     }
 
+    private void leave(Session session, int gameID) throws IOException {
+        // pull out all the players associated with that game
+        List<Connection> relevantConnections = connections.connections.get(gameID);
+        Connection userConnection = null;
+
+        // snag the person's username and remove them
+        for (Connection connection : relevantConnections)
+        {
+            if (connection.session.equals(session))
+            {
+               userConnection = connection;
+            }
+        }
+
+        if (userConnection == null)
+            return;
+
+        String username = userConnection.visitorName;
+
+        // delete the connection
+        relevantConnections.remove(userConnection);
+        connections.connections.put(gameID, relevantConnections);
+
+        // send a message out to everyone
+        Notification notification = new Notification(String.format("%s has left the game", username));
+        connections.broadcast(gameID, notification, new ArrayList<>());
+
+        // remove them as a player in the database
+        dataAccess.removePlayer(gameID, username);
+    }
+
+    private void resign(Session session, int gameID) throws IOException {
+
+        // find the player with that session
+        StringBuilder usernameBuilder = null;
+        boolean validResigner = false;
+        List<Connection> possibleConnections = connections.connections.get(Integer.valueOf(gameID));
+        for (Connection connection : possibleConnections) {
+            // you've found the right session
+            if (connection.session.equals(session) && !connection.role.equals(Connection.Role.OBSERVER))
+            {
+                usernameBuilder = new StringBuilder(connection.visitorName);
+                validResigner = true;
+                break;
+            }
+            else if (connection.session.equals(session) && connection.role.equals(Connection.Role.OBSERVER))
+            {
+                usernameBuilder = new StringBuilder(connection.visitorName);
+                validResigner = false;
+                break;
+            }
+        }
+
+        // if the game is already over, send an error message
+        ChessGame game = dataAccess.getGame(gameID).game();
+        if (game.isOver())
+        {
+            session.getRemote().sendString(new Gson().toJson(new Error("Someone else already resigned")));
+        }
+        // if they're validly resigning, end the game and send out the message
+        else if (validResigner)
+        {
+            game.forceGameOver();
+            dataAccess.updateGame(gameID, game);
+            List<String> exclusions = new ArrayList<>();
+            ServerMessage message = new Notification(String.format("%s has forfeited", usernameBuilder.toString()));
+            connections.broadcast(gameID, message, exclusions);
+        }
+        else if (!validResigner)
+        {
+            session.getRemote().sendString(new Gson().toJson(new Error("You don't have the right to resign")));
+        }
+    }
+
+
+
     private void move(Session session, int gameID, ChessMove move, String authToken) throws IOException {
         // get the game
         ChessGame game = dataAccess.getGame(gameID).game();
         String username = this.dataAccess.getUsername(authToken);
+        ChessGame.TeamColor color;
+        if (this.dataAccess.getGame(gameID).whiteUsername().equals(username))
+            color = ChessGame.TeamColor.WHITE;
+        else if (this.dataAccess.getGame(gameID).blackUsername().equals(username))
+            color = ChessGame.TeamColor.BLACK;
+        else
+        {
+            Error error = new Error("You aren't allowed to move that piece");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+
 
         // if it's game over, send back an error message
-        if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInCheckmate(ChessGame.TeamColor.WHITE) ||
-            game.isInStalemate(ChessGame.TeamColor.BLACK) || game.isInCheckmate(ChessGame.TeamColor.BLACK))
+        if (game.isOver())
         {
             webSocketMessages.serverMessages.Error error = new Error("Game is over. You can't move");
             String temp = new Gson().toJson(error);
-            if (session.isOpen())
-                session.getRemote().sendString(new Gson().toJson(error));
+            session.getRemote().sendString(new Gson().toJson(error));
             return;
         }
 
@@ -145,7 +228,7 @@ public class WebSocketHandler {
         try
         {
             game.makeMove(move);
-            dataAccess.createGame(dataAccess.getGame(gameID).gameName(), game);
+            dataAccess.updateGame(gameID, game);
             ServerMessage toSend = new Notification(String.format("%s moved their piece at %s to %s",
                                                     username,
                                                     move.getStartPosition().toString(),

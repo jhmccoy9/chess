@@ -83,19 +83,17 @@ public class MemoryDataAccess implements DataAccess
             this.authData.remove(session);
     }
 
-    public GameData createGame(String gameName, ChessGame game)
+    public GameData createGame(String gameName)
     {
         // get the id. For us, it will be one more than the max of the game ids
         int gameId = 1;
-        for (GameData i : this.games)
+        for (GameData game : this.games)
         {
-            if (i.gameID() >= gameId)
-                gameId = i.gameID() + 1;
+            if (game.gameID() >= gameId)
+                gameId = game.gameID() + 1;
         }
         // just autofill it with blank player names as null for the time being...
-        if (game == null)
-            game = new ChessGame();
-        GameData newGame = new GameData(gameId, null, null, gameName, game);
+        GameData newGame = new GameData(gameId, null, null, gameName, new ChessGame());
         this.games.add(newGame);
         return newGame;
     }
@@ -171,5 +169,17 @@ public class MemoryDataAccess implements DataAccess
         }
         // if nothing shows up, return null
         return null;
+    }
+
+    @Override
+    public void updateGame(int gameID, ChessGame game)
+    {
+        // TODO later
+    }
+
+    @Override
+    public void removePlayer(int gameID, String username)
+    {
+        // TODO later
     }
 }
