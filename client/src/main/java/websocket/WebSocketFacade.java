@@ -102,5 +102,17 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public void resign(Resign resign) throws ResponseException
+    {
+        try
+        {
+            this.session.getBasicRemote().sendText(new Gson().toJson(resign));
+        }
+        catch(IOException e)
+        {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
 }
 

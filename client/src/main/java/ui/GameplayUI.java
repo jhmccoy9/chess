@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 import server.ServerFacade;
 import webSocketMessages.userCommands.MakeMove;
+import webSocketMessages.userCommands.Resign;
 import websocket.*;
 
 import java.util.*;
@@ -152,7 +153,8 @@ public class GameplayUI
                     break;
 
                 case "resign":
-//                    this.joinGame();
+                    Resign resign = new Resign(authData.authToken(), this.gameID);
+                    System.out.println("You gave up successfully :(");
                     break;
 
                 case "highlight":
