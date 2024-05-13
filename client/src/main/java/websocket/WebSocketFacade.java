@@ -30,9 +30,6 @@ public class WebSocketFacade extends Endpoint {
 
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                // TODO: you could tweak this to make it accept all kinds of messages--json files, even
-                // in reality, this should probably just be used for notifications. I bet there's a better
-                // way to handle actual messages/data being passed. Actually, I'm not sure I still agree with that
 
                 @Override
                 public void onMessage(String jsonMessage) {
@@ -73,6 +70,17 @@ public class WebSocketFacade extends Endpoint {
             this.session.close();
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void makeMove(MakeMove move) throws ResponseException {
+        try
+        {
+            this.session.getBasicRemote().sendText(new Gson().toJson(move));
+        }
+        catch (IOException e)
+        {
+            throw new ResponseException(500, e.getMessage());
         }
     }
 

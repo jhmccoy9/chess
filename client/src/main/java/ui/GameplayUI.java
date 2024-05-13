@@ -1,13 +1,11 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import server.ServerFacade;
+import webSocketMessages.userCommands.MakeMove;
 import websocket.*;
 
 import java.util.*;
@@ -91,7 +89,7 @@ public class GameplayUI
         }
 
         ChessBoard board = game.getBoard();
-        this.redrawBoard(board);
+        //this.redrawBoard(board);
 
         Set<String> validOptions = new HashSet<>();
         validOptions.add("help");
@@ -121,24 +119,31 @@ public class GameplayUI
 
                 case "leave":
                     leave = true;
-                    // MUST FIX STUFF BELOW
-//                    try
-//                    {
-//                        server.logoutUser(authData.authToken());
-//                    }
-//                    catch (ResponseException e)
-//                    {
-//                        System.out.println("Error logging out. Returning to prelogin");
-//                    }
-                    System.out.println("You have left the game");
+                    try
+                    {
+                        ws.leaveGame(this.authData.authToken(), this.gameID);
+                        System.out.println("You have left the game");
+                    }
+                    catch (ResponseException e)
+                    {
+                        System.out.printf("Unable to leave game due to exception %s\n", e.getMessage());
+                    }
+
                     break;
 
                 case "redraw":
-                    this.redrawBoard(board);
+                    this.redrawBoard(this.getGame().getBoard());
                     break;
 
                 case "move":
-//                    this.listGames();
+                    try
+                    {
+                        this.makeMove();
+                    }
+                    catch (ResponseException e)
+                    {
+                        System.out.printf("Unable to make move due to exception %s\n", e.getMessage());
+                    }
                     break;
 
                 case "resign":
@@ -146,7 +151,7 @@ public class GameplayUI
                     break;
 
                 case "highlight":
-                    this.highlightMoves(game, board);
+                    this.highlightMoves(game, this.getGame().getBoard(), this.getPosition());
                     break;
 
                 default:
@@ -156,11 +161,78 @@ public class GameplayUI
 
 
             }
-        return;
     }
+
+    private void makeMove() throws ResponseException {
+        System.out.println("Enter the location of the piece you wish to move");
+        ChessPosition start = this.getPosition();
+        System.out.println("Enter the location of the place you'd like this piece to move");
+        ChessPosition end = this.getPosition();
+        ChessPiece.PieceType promotionPiece = null;
+
+        ChessPiece piece = this.getGame().getBoard().getPiece(start);
+        if (piece == null)
+        {
+            System.out.println("Invalid piece selection");
+            return;
+        }
+
+        // see if it's a pawn and, if it is, see if you want to promote it
+        if (piece.getPieceType().equals(ChessPiece.PieceType.PAWN))
+        {
+            // see if it's at the very edge
+            if (end.getRow() == 1 || end.getRow() == 8)
+            {
+                // if it is, ask for the promotion piece type
+                HashSet<String> possiblePieces = new HashSet<>();
+                possiblePieces.add("king");
+                possiblePieces.add("queen");
+                possiblePieces.add("knight");
+                possiblePieces.add("bishop");
+                possiblePieces.add("rook");
+
+                System.out.println("Enter the type of piece you want to promote this pawn to");
+                String stringPromotionPiece = Utilities.getInput(possiblePieces);
+                switch (stringPromotionPiece)
+                {
+                    case "king":
+                        promotionPiece = ChessPiece.PieceType.KING;
+                        break;
+                    case "queen":
+                        promotionPiece = ChessPiece.PieceType.QUEEN;
+                    case "knight":
+                        promotionPiece = ChessPiece.PieceType.KNIGHT;
+                    case "bishop":
+                        promotionPiece = ChessPiece.PieceType.ROOK;
+                    case "rook":
+                        promotionPiece = ChessPiece.PieceType.ROOK;
+                    case null, default:
+                        // you would be stupid not to pick queen imho
+                        promotionPiece = ChessPiece.PieceType.QUEEN;
+                }
+            }
+        }
+        ChessMove move = new ChessMove(start, end, promotionPiece);
+        MakeMove makeMove = new MakeMove(this.authData.authToken(), this.gameID, move);
+        ws.makeMove(makeMove);
+    }
+
     private void redrawBoard(ChessBoard board) { Utilities.printChessBoard(board); }
 
-    private void highlightMoves(ChessGame game, ChessBoard board)
+    private void highlightMoves(ChessGame game, ChessBoard board, ChessPosition position)
+    {
+
+        // get the possible moves for that place
+        Collection<ChessMove> possibleMoves = game.validMoves(position);
+        Collection<ChessPosition> possiblePositions = new HashSet<>();
+        if (possibleMoves != null)
+            for (ChessMove move : possibleMoves) { possiblePositions.add(move.getEndPosition()); }
+
+        // redraw the board, but with possible moves highlighted
+        Utilities.printChessBoard(board, possiblePositions);
+    }
+
+    ChessPosition getPosition()
     {
         // possible options
         Collection<String> possibleRows = new ArrayList<>();
@@ -184,7 +256,6 @@ public class GameplayUI
         possibleCols.add("h");
 
         // ask for the piece whose moves it wants to know
-        System.out.println("Enter the position of the piece whose moves you want to know");
         System.out.print("Row: ");
         String row = Utilities.getInput(possibleRows);
         System.out.print("Column: ");
@@ -224,16 +295,27 @@ public class GameplayUI
         }
 
         // convert those coordinates into a position
-        ChessPosition position = new ChessPosition(Integer.parseInt(row), intCol);
-
-        // get the possible moves for that place
-        Collection<ChessMove> possibleMoves = game.validMoves(position);
-        Collection<ChessPosition> possiblePositions = new HashSet<>();
-        if (possibleMoves != null)
-            for (ChessMove move : possibleMoves) { possiblePositions.add(move.getEndPosition()); }
-
-        // redraw the board, but with possible moves highlighted
-        Utilities.printChessBoard(board, possiblePositions);
-        return;
+        return new ChessPosition(Integer.parseInt(row), intCol);
     }
+
+    ChessGame getGame() {
+        // get the game
+        Collection<GameData> gameDataCollection = null;
+        try {
+            gameDataCollection = server.listGames(this.authData.authToken());
+        } catch (ResponseException e) {
+            System.out.println("Error joining game");
+            return null;
+        }
+
+        for (GameData possibleGame : gameDataCollection) {
+            if (possibleGame.gameID() == this.gameID) {
+                return possibleGame.game();
+
+            }
+        }
+        return null;
+    }
+
+
 }
