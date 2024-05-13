@@ -81,6 +81,7 @@ public class GameplayUI
                 catch (ResponseException e)
                 {
                     System.out.println("Error: unable to join game via websocket");
+                    System.out.printf("Status code: %d", e.statusCode());
                     return;
                 }
 
@@ -94,8 +95,8 @@ public class GameplayUI
             return;
         }
 
-        ChessBoard board = game.getBoard();
-        //this.redrawBoard(board);
+        //ChessBoard board = game.getBoard();
+        this.redrawBoard(this.getGame().getBoard());
 
         Set<String> validOptions = new HashSet<>();
         validOptions.add("help");

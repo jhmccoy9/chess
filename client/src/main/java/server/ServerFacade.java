@@ -46,16 +46,15 @@ public class ServerFacade {
         return this.makeRequest("DELETE", path, null, null);
     }
 
-    public Object joinGame(int GameID, String color, String authToken) throws ResponseException
+    public Object joinGame(int gameID, String color, String authToken) throws ResponseException
     {
         var path = "/game";
-        JoinGameData request = new JoinGameData(color, GameID);
+        JoinGameData request = new JoinGameData(color, gameID);
         return this.makeRequestAuthToken("PUT", path, request, Object.class, authToken);
     }
 
     public Collection<GameData> listGames(String authToken) throws ResponseException
     {
-        record listGamesResponse(GameData[] game) {};
 
         var path = "/game";
         var response = this.makeRequestListGames("GET", path, null, authToken);

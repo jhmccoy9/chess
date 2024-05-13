@@ -7,7 +7,7 @@ import webSocketMessages.serverMessages.Error;
 public class NotificationHandler {
     void notify(Notification notification)
     {
-        System.out.println((notification.toString() + "\n>>> "));
+        System.out.println((notification.getMessage() + "\n>>> "));
     }
 
     void error(Error error)
