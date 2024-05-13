@@ -57,20 +57,25 @@ public class GameplayUI
                 game = possibleGame.game();
 
                 // get the right color
-                ChessGame.TeamColor color;
-                if (possibleGame.whiteUsername().equals(this.username))
+                ChessGame.TeamColor color = null;
+                if (possibleGame.whiteUsername() != null &&
+                    possibleGame.whiteUsername().equals(this.username))
                     color = ChessGame.TeamColor.WHITE;
-                else if (possibleGame.blackUsername().equals(this.username))
+                else if (possibleGame.blackUsername() != null &&
+                         possibleGame.blackUsername().equals(this.username))
                     color = ChessGame.TeamColor.BLACK;
                 else
                 {
-                    System.out.println("Error: invalid color problem");
-                    return;
+//                    System.out.println("Error: invalid color problem");
+//                    return;
                 }
 
                 try
                 {
-                    ws.enterGame(this.authData.authToken(), this.gameID, color);
+                    if (color != null)
+                        ws.enterGame(this.authData.authToken(), this.gameID, color);
+                    else
+                        ws.observeGame(authData.authToken(), gameID);
                 }
                 catch (ResponseException e)
                 {

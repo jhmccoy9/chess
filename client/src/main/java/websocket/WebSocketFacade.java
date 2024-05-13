@@ -63,13 +63,31 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public void observeGame(String authToken, int gameID) throws ResponseException
+    {
+        try
+        {
+            var action = new JoinObserver(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
+    }
+
     public void leaveGame(String authToken, int gameID) throws ResponseException {
-        try {
+        try
+        {
             var action = new Leave(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
             this.session.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex)
+        {
             throw new ResponseException(500, ex.getMessage());
+        }
+        catch (IllegalStateException ex)
+        {
+            // this means you've successfully logged out I think...
         }
     }
 
