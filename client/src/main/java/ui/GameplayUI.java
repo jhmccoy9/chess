@@ -153,8 +153,26 @@ public class GameplayUI
                     break;
 
                 case "resign":
+                    // go back to the main menu if they don't want to actually resign
+                    System.out.println("Are you sure? y/n");
+                    Collection<String> options = new HashSet<>();
+                    options.add("y");
+                    options.add("n");
+                    String response = Utilities.getInput(options);
+                    if (response.equals("n"))
+                        break;
+
                     Resign resign = new Resign(authData.authToken(), this.gameID);
-                    System.out.println("You gave up successfully :(");
+                    try
+                    {
+                        ws.resign(resign);
+                        System.out.println("You gave up successfully :(");
+                    }
+                    catch (ResponseException e)
+                    {
+                        System.out.println("Unable to resign");
+                        System.out.println(e.getMessage());
+                    }
                     break;
 
                 case "highlight":
